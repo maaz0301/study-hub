@@ -3,8 +3,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getIndex } from '@/lib/content';
 import { LABS } from '@/lib/labs';
-import { PartProgress, TopicRing } from '@/components/ProgressBits';
-import { ContinueButton } from '@/components/ContinueButton';
 
 const HUES = ['#8b5cf6', '#06b6d4', '#f59e0b', '#ec4899', '#10b981', '#3b82f6', '#ef4444', '#84cc16', '#f97316', '#14b8a6'];
 
@@ -23,6 +21,11 @@ export default async function TopicOverview({ params }: { params: Promise<{ slug
   return (
     <div style={{ display: 'grid', gap: 24 }} className="grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
       <div>
+        {t.about && (
+          <div className="about-box" style={{ marginBottom: 18 }}>
+            <b>In short: </b>{t.about}
+          </div>
+        )}
         <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))' }}>
           {t.partList.map((p, i) => (
             <Link key={p.id} href={`/topics/${slug}/${p.id}`} className="panel card-hover" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -31,20 +34,17 @@ export default async function TopicOverview({ params }: { params: Promise<{ slug
                 <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, lineHeight: 1.35 }}>{p.title}</h3>
               </div>
               <p className="muted" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.blurb}</p>
-              <div style={{ marginTop: 'auto' }}><PartProgress prefix={`${slug}/${p.id}/`} total={p.count} /></div>
+              <div className="faint" style={{ marginTop: 'auto', fontSize: 12.5 }}>{p.count} section{p.count === 1 ? '' : 's'} →</div>
             </Link>
           ))}
         </div>
       </div>
 
       <aside style={{ display: 'grid', gap: 14, position: 'sticky', top: 84 }}>
-        <div className="panel" style={{ padding: 18, display: 'flex', gap: 16, alignItems: 'center' }}>
-          <TopicRing slug={slug} total={t.stats.sections} size={74} />
-          <div>
-            <div style={{ fontWeight: 700 }}>Your progress</div>
-            <div className="muted" style={{ fontSize: 13.5 }}>{t.stats.parts} parts · {t.stats.sections} sections{t.stats.questions ? ` · ${t.stats.questions} questions` : ''}</div>
-            <ContinueButton slug={slug} parts={t.partList.map((p) => p.id)} />
-          </div>
+        <div className="panel" style={{ padding: 18 }}>
+          <div style={{ fontWeight: 700 }}>📚 {t.stats.parts} parts · {t.stats.sections} sections</div>
+          {t.stats.questions > 0 && <div className="muted" style={{ fontSize: 13.5, marginTop: 2 }}>{t.stats.questions} questions to test yourself on</div>}
+          <Link href={`/topics/${slug}/${t.partList[0]?.id}`} className="btn btn-primary btn-sm" style={{ marginTop: 12 }}>Start reading →</Link>
         </div>
         <div className="panel" style={{ padding: 18 }}>
           <div style={{ fontWeight: 700, marginBottom: 10 }}>Practice</div>

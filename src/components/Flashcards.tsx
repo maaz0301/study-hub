@@ -1,9 +1,7 @@
 'use client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Card } from '@/lib/types';
-import { progress, useProgress } from '@/lib/progress';
-
-const BOXES = ['New / again', 'Learning', 'Getting there', 'Known', 'Mastered'];
+import { progress } from '@/lib/progress';
 
 function shuffle<T>(a: T[]) {
   const b = [...a];
@@ -15,7 +13,6 @@ function shuffle<T>(a: T[]) {
 }
 
 export function Flashcards({ slug, cards }: { slug: string; cards: Card[] }) {
-  const p = useProgress();
   const parts = useMemo(() => [...new Set(cards.map((c) => c.part))], [cards]);
   const [part, setPart] = useState('all');
   const [mode, setMode] = useState<'due' | 'all'>('due');
@@ -66,13 +63,6 @@ export function Flashcards({ slug, cards }: { slug: string; cards: Card[] }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [flipped, rate]);
 
-  const boxCounts = useMemo(() => {
-    const out = [0, 0, 0, 0, 0];
-    for (const c of cards) out[p.cards[cid(c)]?.box ?? 0]++;
-    return out;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards, p.cards]);
-
   return (
     <div style={{ maxWidth: 860, margin: '0 auto' }}>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 16 }}>
@@ -83,15 +73,6 @@ export function Flashcards({ slug, cards }: { slug: string; cards: Card[] }) {
         <button className={`chip ${mode === 'due' ? 'on' : ''}`} onClick={() => setMode('due')}>Weakest first</button>
         <button className={`chip ${mode === 'all' ? 'on' : ''}`} onClick={() => setMode('all')}>Random</button>
         <button className="btn btn-sm" onClick={build}>↻ New deck</button>
-      </div>
-
-      <div style={{ display: 'flex', gap: 4, marginBottom: 18 }} title="Cards in each Leitner box">
-        {boxCounts.map((n, b) => (
-          <div key={b} style={{ flex: Math.max(n, 0.3), minWidth: 0 }}>
-            <div style={{ height: 8, borderRadius: 4, background: `color-mix(in oklab, var(--accent) ${20 + b * 20}%, var(--border))` }} />
-            <div className="faint" style={{ fontSize: 11, marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{BOXES[b]} · {n}</div>
-          </div>
-        ))}
       </div>
 
       {finished ? (
@@ -105,7 +86,6 @@ export function Flashcards({ slug, cards }: { slug: string; cards: Card[] }) {
         <>
           <div className="faint" style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 8 }}>
             <span>Card {i + 1} / {deck.length} · {card.part}</span>
-            <span>Box: {BOXES[p.cards[cid(card)]?.box ?? 0]}</span>
           </div>
           <div className="progress" style={{ marginBottom: 14 }}><i style={{ width: `${(i / deck.length) * 100}%` }} /></div>
           <div className={`flip ${flipped ? 'flipped' : ''}`} style={{ height: 'min(56vh, 420px)', cursor: 'pointer' }} onClick={() => setFlipped((f) => !f)}>

@@ -18,6 +18,10 @@ export const LABS: Record<string, { title: string; blurb: string }[]> = {
     { title: 'Cosine similarity', blurb: 'Drag vectors and watch the similarity change.' },
     { title: 'Mock interview: design scenarios', blurb: 'Pick a system-design scenario, answer in 2 minutes, tick the key points you covered.' },
   ],
+  leetcode: [
+    { title: 'Algorithm visualizer', blurb: 'Type your own input and step through two pointers, sliding window, binary search, Kadane, fast/slow and list reversal, with C# and JS code.' },
+    { title: 'Big O feel', blurb: 'Slide the input size and see how many steps each complexity needs.' },
+  ],
   'agentic-langchain': [
     { title: 'LangGraph agent run', blurb: 'Step through a ReAct agent graph: state, tool calls, failures and a human-approval interrupt.' },
     { title: 'Agentic patterns explorer', blurb: 'Chaining, routing, parallel, orchestrator–workers, evaluator–optimizer, agents and supervisors.' },

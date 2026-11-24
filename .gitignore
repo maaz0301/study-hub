@@ -46,3 +46,5 @@ next-env.d.ts
 /public/originals/
 /public/content/
 /public/search-index.json
+
+.vercel

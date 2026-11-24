@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { pathToFileURL } from 'node:url';
 import mammoth from 'mammoth';
 import * as cheerio from 'cheerio';
 import { marked } from 'marked';
@@ -69,7 +70,7 @@ function polish(html, { langHint } = {}) {
     if (!raw) { $p.remove(); return; }
     const cls = ($p.attr('class') || '') + ' ' + ($p.find('code').attr('class') || '');
     const m = cls.match(/language-([\w#+-]+)/);
-    let lang = m ? m[1].replace('cs', 'csharp').replace('csharpharp', 'csharp') : langHint;
+    let lang = m ? (m[1] === 'cs' ? 'csharp' : m[1]) : langHint;
     if ($p.hasClass('out')) lang = 'plaintext';
     const h = highlight(raw, lang);
     const extra = $p.hasClass('out') ? ' out' : '';
@@ -281,7 +282,7 @@ function fromGenericHtml(file, meta) {
   return finishTopic(meta, parts);
 }
 
-function fromMarkdown(file, meta) {
+async function fromMarkdown(file, meta) {
   let src = fs.readFileSync(file, 'utf8');
   const fm = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/.exec(src);
   if (fm) {
@@ -295,6 +296,21 @@ function fromMarkdown(file, meta) {
   const html = marked.parse(src);
   const parts = splitByHeadings(html, { partTag: 'h1', groupTag: 'h2', secTag: null });
   // in markdown, ## is the section; ### stays inside it
+  if (meta.cards === 'all') for (const p of parts) for (const sec of p.sections) sec.isQuestion = sec.title !== p.title;
+  // optional <slug>.js-solutions.mjs: a JavaScript tab next to the first C# block of each section
+  const jsFile = file.replace(/\.md$/, '.js-solutions.mjs');
+  if (fs.existsSync(jsFile)) {
+    const sols = (await import(pathToFileURL(jsFile).href)).default;
+    for (const p of parts) for (const sec of p.sections) {
+      const js = sols[(sec.title.match(/^(\d+)\./) || [])[1] || sec.title];
+      if (!js) continue;
+      const jsPre = `<pre><code class="language-javascript">${esc(js)}</code></pre>`;
+      const m = /<pre><code class="language-csharp">[\s\S]*?<\/code><\/pre>/.exec(sec.html);
+      sec.html = m
+        ? sec.html.slice(0, m.index) + `<div class="code-tabs">${m[0]}${jsPre}</div>` + sec.html.slice(m.index + m[0].length)
+        : sec.html + `<h4>JavaScript / Node.js</h4>${jsPre}`;
+    }
+  }
   const extras = {};
   const quizFile = file.replace(/\.md$/, '.quiz.json');
   if (fs.existsSync(quizFile)) extras.quiz = JSON.parse(fs.readFileSync(quizFile, 'utf8'));
@@ -493,6 +509,7 @@ async function main() {
 
   const index = [];
   const search = [];
+  const built = {};
   let pi = 0;
   for (const file of files) {
     const base = path.basename(file);
@@ -515,7 +532,7 @@ async function main() {
     let topic;
     try {
       if (handler === 'docx') topic = await fromDocx(file, meta);
-      else if (handler === 'md') topic = fromMarkdown(file, meta);
+      else if (handler === 'md') topic = await fromMarkdown(file, meta);
       else if (handler === 'genai') topic = fromGenai(file, meta);
       else if (handler === 'voice') topic = fromVoice(file, meta);
       else if (handler === 'csharp') topic = fromCsharp(file, meta);
@@ -525,6 +542,18 @@ async function main() {
       continue;
     }
     if (cfg.order != null) topic.order = cfg.order;
+    if (cfg.about) topic.about = cfg.about;
+    if (cfg.importParts && built[cfg.importParts.from]) {
+      const src = built[cfg.importParts.from];
+      const re = new RegExp(cfg.importParts.match, 'i');
+      for (const p of src.parts.filter((x) => re.test(x.title))) {
+        const title = (cfg.importParts.prefix || '') + p.title.replace(/^Part \d+\s*[—-]\s*/, '');
+        topic.parts.push({ ...p, id: slugify(title), title });
+        topic.cards.push(...src.cards.filter((c) => c.part === p.title).map((c) => ({ ...c, id: 'imp-' + c.id, part: title })));
+      }
+      topic.stats = { ...topic.stats, parts: topic.parts.length, sections: topic.parts.reduce((n, p) => n + p.sections.length, 0), questions: topic.parts.reduce((n, p) => n + p.sections.filter((x) => x.isQuestion).length, 0), cards: topic.cards.length };
+    }
+    built[topic.slug] = topic;
     if (/\.html?$/i.test(base)) {
       fs.copyFileSync(file, path.join(PUB, 'originals', base));
       topic.original = `/originals/${base}`;

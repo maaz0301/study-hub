@@ -1,3 +1,5 @@
+import { leetcodeDiagrams, LEETCODE_RULES } from './diagrams-leetcode.mjs';
+
 // Animated, theme-aware SVG diagrams ("GIF-style" pictures) injected into sections at build time.
 // Generators: flow (pipeline), cycle (loop), hub (star), compare (side by side) + a few custom pictures.
 
@@ -373,6 +375,9 @@ export const RULES = {
   mongodb: [[/in one minute/i, 'doc-vs-table'], [/why do indexes matter/i, 'btree'], [/what is the aggregation pipeline/i, 'mongo-agg'], [/embedding vs referencing/i, 'embed-vs-ref'], [/replica set/i, 'replica-set'], [/sharding and how/i, 'sharding']],
   postgres: [[/order SQL actually runs/i, 'sql-order'], [/types of JOIN/i, 'joins'], [/how do indexes work/i, 'btree'], [/what does ACID mean/i, 'transaction'], [/what is MVCC/i, 'mvcc'], [/pgvector/i, 'rag-pipeline']],
 };
+
+Object.assign(D, leetcodeDiagrams({ flow, cycle }));
+RULES.leetcode = LEETCODE_RULES;
 
 export function renderDiagram(name) {
   const f = D[name];

@@ -320,3 +320,29 @@ body {
 .sec-card[data-open="true"] { border-left-color: var(--accent); }
 .q-pill { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; margin-right: 8px; border-radius: 7px; font-size: 11.5px; font-weight: 800; color: white; background: linear-gradient(120deg, var(--accent), color-mix(in oklab, var(--accent) 55%, var(--brand-2))); vertical-align: 2px; }
 .pic-pill { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: color-mix(in oklab, #f59e0b 80%, var(--text)); background: color-mix(in oklab, #f59e0b 16%, transparent); vertical-align: 2px; }
+
+.dg-draw { animation: dgDraw 1.6s ease forwards; }
+@keyframes dgDraw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .dg-draw { animation: none; stroke-dashoffset: 0; } }
+
+/* C# / JavaScript code tabs */
+.code-tabs { margin: 1em 0; }
+.code-tabs .tab-bar { display: flex; gap: 6px; margin-bottom: -6px; position: relative; z-index: 1; padding-left: 10px; }
+.code-tabs .tab-bar button {
+  border: 1px solid var(--border-2); border-bottom: 0; border-radius: 10px 10px 0 0; padding: 6px 14px; font-size: 13px; font-weight: 700;
+  cursor: pointer; background: var(--panel-2); color: var(--muted); font-family: var(--font-sans), sans-serif;
+}
+.code-tabs .tab-bar button[aria-selected="true"] { background: var(--code-bg); color: #fff; border-color: transparent; }
+.code-tabs .tab-bar button[data-lang="csharp"][aria-selected="true"] { box-shadow: inset 0 3px 0 #a855f7; }
+.code-tabs .tab-bar button[data-lang="javascript"][aria-selected="true"] { box-shadow: inset 0 3px 0 #facc15; }
+.code-tabs pre.code-block { margin-top: 0; }
+.code-tabs.ready pre.code-block:not(.active) { display: none; }
+
+/* "In short" topic explanation */
+.about-box {
+  position: relative; padding: 14px 18px 14px 52px; border-radius: 16px; font-size: 15px; line-height: 1.6;
+  background: linear-gradient(120deg, color-mix(in oklab, var(--accent) 12%, var(--panel)), var(--panel));
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, var(--border));
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+}
+.about-box::before { content: "💡"; position: absolute; left: 16px; top: 13px; font-size: 20px; }

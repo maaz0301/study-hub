@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <footer className="container-x" style={{ padding: '48px 16px 40px' }}>
           <div className="faint" style={{ fontSize: 13, borderTop: '1px solid var(--border)', paddingTop: 20 }}>
-            Study Hub · built from your own notes · progress is saved in this browser
+            Study Hub · built from your own notes
           </div>
         </footer>
       </body>

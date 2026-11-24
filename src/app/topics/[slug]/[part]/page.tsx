@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getIndex, getTopic } from '@/lib/content';
 import { PartReader } from '@/components/PartReader';
-import { PartProgress } from '@/components/ProgressBits';
 
 export function generateStaticParams() {
   return getIndex().flatMap((t) => t.partList.map((p) => ({ slug: t.slug, part: p.id })));
@@ -42,7 +41,6 @@ export default async function PartPage({ params }: { params: Promise<{ slug: str
                     <span className="faint" style={{ fontVariantNumeric: 'tabular-nums', fontSize: 12, paddingTop: 1 }}>{i + 1}</span>
                     <span style={{ flex: 1 }}>{x.title}</span>
                   </span>
-                  {on && <div style={{ marginTop: 6 }}><PartProgress prefix={`${slug}/${x.id}/`} total={x.sections.length} /></div>}
                 </Link>
               );
             })}

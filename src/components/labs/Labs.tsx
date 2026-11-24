@@ -22,6 +22,8 @@ const L = {
   Patterns: dynamic(() => import('./AgentLabs').then((m) => m.PatternsLab), { loading }),
   Mock: dynamic(() => import('./AgentLabs').then((m) => m.MockInterviewLab), { loading }),
   Lifecycle: dynamic(() => import('./AiLabs').then((m) => m.LifecycleLab), { loading }),
+  Algo: dynamic(() => import('./LeetLabs').then((m) => m.AlgoLab), { loading }),
+  BigO: dynamic(() => import('./LeetLabs').then((m) => m.BigOLab), { loading }),
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -31,6 +33,7 @@ const MAP: Record<string, ((d: any) => React.ReactNode)[]> = {
   postgres: [() => <L.Sql />, () => <L.Join />],
   'genai-rag': [() => <L.Chunk />, () => <L.Cosine />, (d) => <L.Mock items={d?.mock || []} />],
   'agentic-langchain': [() => <L.AgentGraph />, () => <L.Patterns />],
+  leetcode: [() => <L.Algo />, () => <L.BigO />],
   'voice-ai': [(d) => <L.Pipeline steps={d?.steps || []} />, () => <L.Latency />],
   'react-node': [() => <L.EventLoop />, () => <L.Status />],
   csharp: [(d) => <L.Predict items={d || []} />],

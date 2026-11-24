@@ -1,7 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import type { Card, QuizItem } from '@/lib/types';
-import { progress, useProgress } from '@/lib/progress';
 
 type Q = QuizItem & { kind: 'authored' | 'match'; from?: string };
 
@@ -26,8 +25,7 @@ function fromCards(cards: Card[], n: number): Q[] {
   });
 }
 
-export function Quiz({ slug, authored, cards }: { slug: string; authored: QuizItem[]; cards: Card[] }) {
-  const p = useProgress();
+export function Quiz({ authored, cards }: { slug: string; authored: QuizItem[]; cards: Card[] }) {
   const [len, setLen] = useState(10);
   const [qs, setQs] = useState<Q[]>([]);
   const [i, setI] = useState(0);
@@ -61,7 +59,6 @@ export function Quiz({ slug, authored, cards }: { slug: string; authored: QuizIt
     setLog((l) => [...l, ok]);
   };
   const next = () => {
-    if (i + 1 >= qs.length) progress.saveQuiz(slug, score, qs.length);
     setI((x) => x + 1);
     setPicked(null);
   };
@@ -76,7 +73,6 @@ export function Quiz({ slug, authored, cards }: { slug: string; authored: QuizIt
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const best = p.quiz[slug];
 
   return (
     <div style={{ maxWidth: 860, margin: '0 auto' }}>
@@ -84,7 +80,6 @@ export function Quiz({ slug, authored, cards }: { slug: string; authored: QuizIt
         <span className="muted" style={{ fontSize: 14 }}>Questions:</span>
         {[5, 10, 20].map((n) => <button key={n} className={`chip ${len === n ? 'on' : ''}`} onClick={() => setLen(n)}>{n}</button>)}
         <button className="btn btn-sm" onClick={start}>↻ Restart</button>
-        {best && <span className="faint" style={{ marginLeft: 'auto', fontSize: 13 }}>Best: {best.best}/{best.total}</span>}
       </div>
 
       <div style={{ display: 'flex', gap: 4, marginBottom: 18 }}>

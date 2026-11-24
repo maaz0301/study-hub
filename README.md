@@ -15,7 +15,7 @@ npm run dev        # http://localhost:3000
 
 ## Features
 
-- **Reader**: every topic split into parts and sections. Questions start collapsed so you can test yourself first. Tick ✔ to mark a section as learned; progress is saved in your browser.
+- **Reader**: every topic split into parts and sections. Questions start collapsed so you can test yourself first. Search, flashcards and quizzes work on every topic.
 - **Search** (`/` or `Ctrl K`): full-text search across ~1,000 sections in every topic.
 - **Flashcards**: Leitner boxes, weakest cards first, keyboard shortcuts (Space, ← →).
 - **Quiz**: hand-written multiple choice (for .NET, MongoDB, PostgreSQL) mixed with questions generated from each topic's flashcards.

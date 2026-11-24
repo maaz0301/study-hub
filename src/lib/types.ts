@@ -28,6 +28,7 @@ export type TopicMeta = {
   source: string;
   original: string | null;
   layout: 'qa' | 'lessons';
+  about?: string;
   stats: Stats;
 };
 

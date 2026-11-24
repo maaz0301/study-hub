@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { categories, getIndex, getTopic } from '@/lib/content';
 import { LABS } from '@/lib/labs';
-import { OverallStats, TopicRing } from '@/components/ProgressBits';
 import { RandomQuestion } from '@/components/RandomQuestion';
 
 const PATH = [
   { slug: 'csharp', why: 'Learn the language: types, loops, classes, collections.' },
+  { slug: 'leetcode', why: 'Practice coding problems in C# and JavaScript.' },
   { slug: 'dotnet', why: 'Build web APIs: DI, middleware, EF Core, async.' },
   { slug: 'postgres', why: 'Relational data: SQL, joins, indexes, transactions.' },
   { slug: 'mongodb', why: 'Document data: CRUD, aggregation, schema design.' },
@@ -47,9 +47,7 @@ export default function Home() {
         <RandomQuestion />
       </section>
 
-      <section style={{ marginBottom: 40 }}>
-        <OverallStats total={totals.s} />
-      </section>
+      <div style={{ height: 24 }} />
 
       {/* learn with pictures */}
       {showcase.length > 0 && (
@@ -105,9 +103,8 @@ export default function Home() {
                   <span className="emoji-tile" style={{ fontSize: 30, width: 56, height: 56, borderRadius: 16, display: 'grid', placeItems: 'center', flexShrink: 0 }}>{t.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <h3 style={{ margin: 0, fontSize: 18, fontWeight: 750, letterSpacing: '-0.01em' }}>{t.title}</h3>
-                    <p className="muted" style={{ margin: '4px 0 0', fontSize: 14, lineHeight: 1.5 }}>{t.subtitle}</p>
+                    <p className="muted" style={{ margin: '4px 0 0', fontSize: 14, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{t.about || t.subtitle}</p>
                   </div>
-                  <TopicRing slug={t.slug} total={t.stats.sections} size={48} />
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span className="badge">{t.stats.sections} sections</span>

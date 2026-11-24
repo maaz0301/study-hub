@@ -8,7 +8,8 @@
     "accent": "#8b5cf6",
     "category": "AI Engineering",
     "order": 10,
-    "handler": "genai"
+    "handler": "genai",
+    "about": "LLMs only know what they were trained on. RAG gives them an \"open book\": split your documents into chunks, turn them into embeddings, store them in a vector database, and fetch the closest passages for every question. Agents go further and let the model use tools in a loop. This topic covers all 225 interview questions in plain words."
   },
   "voice-ai-agent.html": {
     "slug": "voice-ai",
@@ -18,7 +19,8 @@
     "accent": "#ec4899",
     "category": "AI Engineering",
     "order": 12,
-    "handler": "voice"
+    "handler": "voice",
+    "about": "A voice agent is a pipeline: speech-to-text (ears), an LLM with tools (brain and hands), and text-to-speech (mouth). The hard parts are speed (about 1 second to first audio), knowing when the user has finished talking, and handling mishearing safely. Stream every stage and confirm risky actions."
   },
   "ai-engineer-fastapi-flask.docx": {
     "slug": "ai-fastapi-flask",
@@ -27,7 +29,8 @@
     "emoji": "⚡",
     "accent": "#10b981",
     "category": "AI Engineering",
-    "order": 13
+    "order": 13,
+    "about": "Real interview answers for AI Engineer roles plus Python web APIs. FastAPI is async, typed and validates input with Pydantic; Flask is small, synchronous and flexible. You will also find RAG system design, evaluation, and reports from real interviews."
   },
   "react-node-interview.docx": {
     "slug": "react-node",
@@ -36,7 +39,8 @@
     "emoji": "⚛️",
     "accent": "#06b6d4",
     "category": "Web Development",
-    "order": 20
+    "order": 20,
+    "about": "JavaScript runs your whole stack: React builds the UI from components and state, and Node.js runs JavaScript on the server with a non-blocking event loop. This guide covers HTTP, JS core, React, Express, TypeScript, MongoDB, SQL, Redis and Docker, with coding questions."
   },
   "csharp-lessons.html": {
     "slug": "csharp",
@@ -46,18 +50,32 @@
     "accent": "#a855f7",
     "category": ".NET",
     "order": 30,
-    "handler": "csharp"
+    "handler": "csharp",
+    "about": "C# is a typed, object-oriented language that runs on .NET. These 99 lessons go from Hello World and variables through loops, arrays, methods and classes to LINQ, async and dependency injection. Each lesson explains the code line by line; guess the output before you reveal it."
   },
   "dotnet.md": {
-    "order": 31
+    "order": 31,
+    "about": ".NET is the platform that runs C#: code compiles to IL and the CLR turns it into machine code. ASP.NET Core builds web APIs from three ideas: dependency injection, a middleware pipeline and configuration. EF Core maps your C# classes to database tables."
   },
   "mongodb.md": {
-    "order": 40
+    "order": 40,
+    "about": "MongoDB stores data as flexible JSON-like documents instead of rows. Data that is read together is stored together, so you embed or reference depending on how you query. Indexes keep reads fast, the aggregation pipeline transforms data in stages, and replica sets and sharding give availability and scale."
   },
   "postgres.md": {
-    "order": 41
+    "order": 41,
+    "about": "PostgreSQL is a relational database: tables, keys and SQL. It is famous for correctness (ACID transactions with MVCC), powerful indexes, and extras like JSONB and pgvector. Learn the order SQL runs in, joins, window functions, and how to read EXPLAIN to make queries fast."
   },
   "agentic-langchain.md": {
-    "order": 11
+    "order": 11,
+    "about": "An agent is an LLM in a loop: it thinks, calls a tool, reads the result and repeats until the job is done. LangChain gives you ready-made building blocks (models, prompts, tools, retrievers), and LangGraph lets you wire them into a graph with memory, branching and human approval. Learn when to use a simple workflow and when you really need an agent."
+  },
+  "leetcode.md": {
+    "about": "LeetCode problems test a handful of patterns again and again: two pointers, fast/slow pointers, dummy heads, hash maps, sliding windows, stacks and binary search. Every problem here has a plain-English idea, a picture, a dry run, and solutions in both C# and JavaScript. Learn the pattern, not the answer.",
+    "order": 35,
+    "importParts": {
+      "from": "react-node",
+      "match": "Coding Questions|Top Interview Questions: Strings",
+      "prefix": "JavaScript & Node.js: "
+    }
   }
 }
