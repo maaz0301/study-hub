@@ -1,5 +1,7 @@
 # Study Hub
 
+**Live site:** https://study-hub-eight-nu-74.vercel.app (deploys automatically on every push to `main`)
+
 An interactive Next.js study site built from your own notes: GenAI & RAG, Agentic AI & LangChain/LangGraph, Voice AI agents, AI Engineer / FastAPI / Flask, React & Node, C# lessons 1–99, plus new .NET, MongoDB and PostgreSQL guides.
 
 ## Run it
