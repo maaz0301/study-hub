@@ -1,6 +1,6 @@
 # Study Hub
 
-An interactive Next.js study site built from your own notes: GenAI & RAG, Voice AI agents, AI Engineer / FastAPI / Flask, React & Node, C# lessons 1–99, plus new .NET, MongoDB and PostgreSQL guides.
+An interactive Next.js study site built from your own notes: GenAI & RAG, Agentic AI & LangChain/LangGraph, Voice AI agents, AI Engineer / FastAPI / Flask, React & Node, C# lessons 1–99, plus new .NET, MongoDB and PostgreSQL guides.
 
 ## Run it
 
@@ -14,7 +14,7 @@ npm run dev        # http://localhost:3000
 ## Features
 
 - **Reader**: every topic split into parts and sections. Questions start collapsed so you can test yourself first. Tick ✔ to mark a section as learned; progress is saved in your browser.
-- **Search** (`/` or `Ctrl K`): full-text search across ~970 sections in every topic.
+- **Search** (`/` or `Ctrl K`): full-text search across ~1,000 sections in every topic.
 - **Flashcards**: Leitner boxes, weakest cards first, keyboard shortcuts (Space, ← →).
 - **Quiz**: hand-written multiple choice (for .NET, MongoDB, PostgreSQL) mixed with questions generated from each topic's flashcards.
 - **Playgrounds**:
@@ -22,7 +22,9 @@ npm run dev        # http://localhost:3000
   - MongoDB: real `find()` and aggregation pipelines (via mingo), plus an index explain simulator.
   - .NET: middleware pipeline, DI lifetimes, LINQ chain builder.
   - JavaScript: event loop puzzles, HTTP status quiz. C#: predict the output.
-  - GenAI: chunking playground, cosine similarity. Voice AI: pipeline stepper, latency budget and cost calculator. FastAPI: request lifecycle.
+  - GenAI: chunking playground, cosine similarity, timed mock interview on the 10 design scenarios.
+  - Agentic AI: LangGraph agent run (tool calls, failures, human-approval interrupt) and an agentic patterns explorer.
+  - Voice AI: pipeline stepper, latency budget and cost calculator. FastAPI: request lifecycle.
 - **Original page**: the original interactive HTML guides, embedded unchanged.
 - Light/dark theme, works on phones.
 

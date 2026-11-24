@@ -3,7 +3,7 @@
   "genai-rag-agents.html": {
     "slug": "genai-rag",
     "title": "GenAI, RAG, Agents & Vector DBs",
-    "subtitle": "215 interview questions in plain words, concepts, cheat sheets and code",
+    "subtitle": "225 interview questions in plain words, concepts, cheat sheets and code",
     "emoji": "🧠",
     "accent": "#8b5cf6",
     "category": "AI Engineering",
@@ -17,7 +17,7 @@
     "emoji": "🎙️",
     "accent": "#ec4899",
     "category": "AI Engineering",
-    "order": 11,
+    "order": 12,
     "handler": "voice"
   },
   "ai-engineer-fastapi-flask.docx": {
@@ -27,7 +27,7 @@
     "emoji": "⚡",
     "accent": "#10b981",
     "category": "AI Engineering",
-    "order": 12
+    "order": 13
   },
   "react-node-interview.docx": {
     "slug": "react-node",
@@ -48,7 +48,16 @@
     "order": 30,
     "handler": "csharp"
   },
-  "dotnet.md": { "order": 31 },
-  "mongodb.md": { "order": 40 },
-  "postgres.md": { "order": 41 }
+  "dotnet.md": {
+    "order": 31
+  },
+  "mongodb.md": {
+    "order": 40
+  },
+  "postgres.md": {
+    "order": 41
+  },
+  "agentic-langchain.md": {
+    "order": 11
+  }
 }

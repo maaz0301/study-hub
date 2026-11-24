@@ -9,7 +9,7 @@ export function PartReader({ slug, partId, sections, layout }: Props) {
   const p = useProgress();
   const key = (s: Section) => `${slug}/${partId}/${s.id}`;
   const defaultOpen = useCallback(
-    (s: Section) => !s.isQuestion && layout !== 'lessons' && sections.length <= 8,
+    (s: Section) => (!s.isQuestion && layout !== 'lessons' && sections.length <= 8) || (!!s.hasVisual && !s.isQuestion && layout !== 'lessons'),
     [layout, sections.length],
   );
   const [open, setOpen] = useState<Record<string, boolean>>(() => Object.fromEntries(sections.map((s) => [s.id, defaultOpen(s)])));
@@ -109,8 +109,9 @@ const SectionCard = memo(function SectionCard({ s, open, done, flash, onToggle, 
         <button onClick={onToggle} aria-expanded={open}
           style={{ flex: 1, display: 'flex', gap: 10, alignItems: 'flex-start', textAlign: 'left', background: 'none', border: 0, padding: 0, cursor: 'pointer', color: 'var(--text)' }}>
           <span style={{ flex: 1, fontWeight: 650, fontSize: 15.5, lineHeight: 1.45 }}>
-            {s.isQuestion && <span style={{ color: 'var(--accent)', marginRight: 6 }}>Q</span>}
+            {s.isQuestion && <span className="q-pill">Q</span>}
             {s.title}
+            {s.hasVisual && <span className="pic-pill">🖼️ picture</span>}
           </span>
           <span className="chev faint" style={{ fontSize: 14, marginTop: 3 }}>▶</span>
         </button>

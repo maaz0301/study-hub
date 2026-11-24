@@ -7,6 +7,7 @@ import mammoth from 'mammoth';
 import * as cheerio from 'cheerio';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
+import { RULES, renderDiagram } from './diagrams.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..');
 const SRC = path.join(ROOT, 'content', 'sources');
@@ -126,6 +127,8 @@ function splitByHeadings(html, { partTag = 'h1', groupTag = 'h2', secTag = 'h3',
 }
 
 function finishTopic(meta, parts, extras = {}) {
+  const pid = uniqueIds();
+  for (const p of parts) p.id = pid(p.id);
   let qCount = 0;
   const cards = [];
   for (const p of parts) {
@@ -139,6 +142,21 @@ function finishTopic(meta, parts, extras = {}) {
       }
     }
   }
+  // animated diagrams: put a picture at the top of matching sections, and collect them for the Visual guide
+  const visuals = [];
+  const seen = new Set();
+  for (const p of parts) for (const s of p.sections) {
+    const figs = [];
+    for (const [re, name] of RULES[meta.slug] || []) {
+      if (!re.test(s.title)) continue;
+      const svg = renderDiagram(name);
+      if (!svg || figs.some((x) => x.name === name)) continue;
+      figs.push({ name, svg });
+      if (!seen.has(name)) { seen.add(name); visuals.push({ name, part: p.id, partTitle: p.title, section: s.id, sectionTitle: s.title, svg }); }
+    }
+    if (figs.length) { s.html = figs.map((x) => x.svg).join('') + s.html; s.hasVisual = true; }
+  }
+  if (visuals.length) extras.visuals = visuals;
   for (const c of extras.extraCards || []) cards.push(c);
   delete extras.extraCards;
   const sectionCount = parts.reduce((n, p) => n + p.sections.length, 0);
@@ -327,7 +345,7 @@ function fromCsharp(file, meta) {
 
 function fromGenai(file, meta) {
   const raw = fs.readFileSync(file, 'utf8');
-  const d = extractConsts(raw, ['SECS', 'QA', 'CONCEPTS', 'CHEAT', 'REVISION', 'PLAN', 'CHECKLIST', 'TEN', 'GROUPS', 'RAGSTEPS']);
+  const d = extractConsts(raw, ['SECS', 'QA', 'CONCEPTS', 'CHEAT', 'REVISION', 'PLAN', 'CHECKLIST', 'TEN', 'GROUPS', 'RAGSTEPS', 'MOCK', 'TQ', 'DQ']);
   const $ = cheerio.load(raw);
   const parts = [];
   // 1. Start here: the big picture section from the static page
@@ -373,9 +391,29 @@ function fromGenai(file, meta) {
   if (d.PLAN) parts.push({ id: 'study-plan', title: 'Study plan & checklist', sections: [
     { id: 'plan', title: '14-day study plan', isQuestion: false, html: `<table><thead><tr><th>Days</th><th>Topic</th><th>Do this</th></tr></thead><tbody>${d.PLAN.map(([a, b, c]) => `<tr><td>${esc(a)}</td><td><b>${esc(b)}</b></td><td>${esc(c)}</td></tr>`).join('')}</tbody></table>` },
     ...(d.CHECKLIST ? [{ id: 'checklist', title: 'Ready-for-interview checklist', isQuestion: false, html: `<ul class="checklist">${d.CHECKLIST.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` }] : []),
+    ...['Project ideas for your CV', 'Interview tips'].map((t) => {
+      const card = $('div.card').filter((_, c) => $(c).find('h3').first().text().trim() === t).first();
+      return card.length ? { id: slugify(t), title: t, isQuestion: false, html: card.find('ul').toString() } : null;
+    }).filter(Boolean),
   ] });
+  // design scenarios: attach the mock-interview key points to S1..S10
+  const qaPartOf = (id) => parts.flatMap((p) => p.sections).find((s) => s.id === id.toLowerCase());
+  for (const [k, pts] of Object.entries(d.MOCK || {})) {
+    const s = qaPartOf(k);
+    if (s) s.html += `<h4>Key points to mention (mock interview checklist)</h4><ul class="checklist">${pts.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`;
+  }
+  const mock = Object.entries(d.MOCK || {}).map(([k, pts]) => ({ id: k, q: (d.QA || []).find((r) => r[0] === k)?.[2] || k, points: pts }));
+  // the two practice quizzes become multiple-choice items
+  const toMcq = (list, pool) => (list || []).map((x) => {
+    const wrong = [...new Set(pool)].filter((o) => o !== x.a).sort(() => Math.random() - 0.5).slice(0, 3);
+    const options = [x.a, ...wrong];
+    return { q: x.q, options, answer: 0, explain: x.why };
+  });
+  const tPool = [...(d.TQ || []).map((t) => t.a), 'Fine-tuning with LoRA', 'Quantization', 'Semantic caching', 'Streaming responses', 'Larger context window', 'Lower temperature only'];
+  const dPool = [...(d.DQ || []).map((t) => t.a), 'Switching to a bigger LLM', 'Fine-tuning the model'];
+  const quiz = [...toMcq(d.TQ, tPool), ...toMcq(d.DQ, dPool)];
   const extraCards = (d.CONCEPTS || []).map(([, name, simple, analogy]) => ({ id: `concept-${slugify(name)}`, q: `Concept: ${name}`, a: `${simple} — ${analogy}`, part: 'Concepts' }));
-  return finishTopic(meta, parts, { extraCards, ragSteps: d.RAGSTEPS || null });
+  return finishTopic(meta, parts, { extraCards, ragSteps: d.RAGSTEPS || null, quiz, mock });
 }
 
 function fromVoice(file, meta) {
@@ -405,9 +443,12 @@ function fromVoice(file, meta) {
       };
     }),
   });
+  const framework = $('h2#s-scen').nextAll('div.card').first();
   if (d.SC) parts.push({
     id: 'scenarios', title: 'Scenarios: problem → fix',
-    sections: d.SC.map((s, i) => {
+    sections: [
+      ...(framework.length ? [{ id: 'six-step-structure', title: 'A 6-step structure for ANY “what if” question', isQuestion: false, html: framework.html() }] : []),
+      ...d.SC.map((s, i) => {
       const x = (d.EXTRA || [])[i] || {};
       return {
         id: slugify(s.t), title: `If ${s.t.charAt(0).toLowerCase()}${s.t.slice(1)}, what goes wrong?`, group: s.c, isQuestion: true,
@@ -416,6 +457,7 @@ function fromVoice(file, meta) {
           + (x.why ? `<p><b>Why it happens:</b> ${esc(x.why)}</p>` : '') + (x.trade ? `<p><b>Trade-off:</b> ${esc(x.trade)}</p>` : '') + (x.metric ? `<p><b>Measure it with:</b> ${esc(x.metric)}</p>` : ''),
       };
     }),
+    ],
   });
   if (d.QA) parts.push({ id: 'quick-qa', title: 'Quick Q&A', sections: [...pick('s-qa').map((s) => ({ ...s, title: 'Cascade vs speech-to-speech' })), ...d.QA.map(([q, a]) => ({ id: slugify(q), title: q, isQuestion: true, summary: a, html: `<p>${esc(a)}</p>` }))] });
   const code = [];
@@ -489,7 +531,7 @@ async function main() {
     delete topic.langHint;
     fs.writeFileSync(path.join(OUT, 'topics', `${topic.slug}.json`), JSON.stringify(topic));
     const { parts, cards, extras, ...rest } = topic;
-    index.push({ ...rest, partList: parts.map((p) => ({ id: p.id, title: p.title, count: p.sections.length, blurb: p.blurb || p.sections.slice(0, 3).map((s) => cleanQ(s.title)).join(' · ') })), hasQuiz: !!extras.quiz });
+    index.push({ ...rest, partList: parts.map((p) => ({ id: p.id, title: p.title, count: p.sections.length, blurb: p.blurb || p.sections.slice(0, 3).map((s) => cleanQ(s.title)).join(' · ') })), hasQuiz: !!extras.quiz, visualCount: (extras.visuals || []).length });
     for (const p of parts) for (const s of p.sections) {
       // full-text: the unique words of the section body, so search finds terms beyond the title
       const words = [...new Set(textOf(s.html).toLowerCase().match(/[a-z0-9#+.$_-]{3,}/g) || [])].join(' ').slice(0, 2500);

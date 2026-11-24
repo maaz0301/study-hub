@@ -244,3 +244,79 @@ textarea.input { font-family: var(--font-mono), monospace; font-size: 13px; line
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ================= animated diagrams (GIF-style SVG) ================= */
+.dg {
+  margin: 14px 0 18px; padding: 16px 16px 12px; border-radius: 20px; border: 1px solid var(--border);
+  background:
+    radial-gradient(60% 80% at 0% 0%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 70%),
+    radial-gradient(50% 70% at 100% 100%, color-mix(in oklab, var(--brand-2) 9%, transparent), transparent 70%),
+    var(--panel);
+  box-shadow: var(--shadow);
+}
+.dg svg { width: 100%; height: auto; display: block; overflow: visible; font-family: var(--font-sans), sans-serif; }
+.dg figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align: center; line-height: 1.5; }
+.dg figcaption b { color: var(--text); }
+.dg-box { fill: color-mix(in oklab, var(--c, var(--accent)) 13%, var(--panel)); stroke: var(--c, var(--accent)); stroke-width: 1.6; }
+.dg-hl { opacity: 0; animation-name: dgHl; animation-timing-function: linear; animation-iteration-count: infinite; pointer-events: none; }
+@keyframes dgHl { 0% { opacity: 0 } 4% { opacity: .42 } 14% { opacity: .42 } 22% { opacity: 0 } 100% { opacity: 0 } }
+.dg-label { fill: var(--text); font-weight: 700; font-size: 13.5px; }
+.dg-sub { fill: var(--muted); font-size: 11.5px; }
+.dg-head { fill: #fff; font-weight: 800; font-size: 19px; }
+.dg-head2 { fill: var(--text); font-weight: 750; font-size: 14px; }
+.dg-item { fill: var(--text); font-size: 13.5px; }
+.dg-arrow { stroke: var(--faint); stroke-width: 1.8; }
+.dg-dot { filter: drop-shadow(0 0 5px var(--accent)); }
+.dg-center { fill: color-mix(in oklab, var(--accent) 14%, var(--panel)); stroke: color-mix(in oklab, var(--accent) 50%, var(--border)); stroke-width: 1.5; }
+.dg-spin { stroke: var(--accent); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 46 320; transform-box: fill-box; transform-origin: center; animation: dgSpin 2.8s linear infinite; }
+@keyframes dgSpin { to { transform: rotate(360deg); } }
+.dg-pop { transform-box: fill-box; animation: dgPop .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes dgPop { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+.dg-dash { stroke-dasharray: 6 6; animation: dgDash 1s linear infinite; }
+@keyframes dgDash { to { stroke-dashoffset: -12; } }
+.dg-ping { transform-box: fill-box; transform-origin: center; animation: dgPing 1.6s ease-out infinite; }
+@keyframes dgPing { from { transform: scale(1); opacity: .65; } to { transform: scale(2.6); opacity: 0; } }
+.dg-glow .dg-box { filter: drop-shadow(0 0 14px color-mix(in oklab, var(--accent) 45%, transparent)); }
+@media (prefers-reduced-motion: reduce) {
+  .dg-hl, .dg-spin, .dg-ping, .dg-dash { animation: none !important; }
+  .dg-dot { display: none; }
+}
+
+/* ================= colour & UI polish ================= */
+:root { --brand-3: #ff5fa2; --grad: linear-gradient(120deg, var(--brand), var(--brand-2)); }
+body {
+  background-image: radial-gradient(color-mix(in oklab, var(--text) 7%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-attachment: fixed;
+}
+.btn-primary { background: linear-gradient(120deg, var(--accent), color-mix(in oklab, var(--accent) 55%, var(--brand-2))); box-shadow: 0 6px 18px -6px color-mix(in oklab, var(--accent) 70%, transparent); }
+.btn-primary:hover { background: linear-gradient(120deg, color-mix(in oklab, var(--accent) 85%, black), color-mix(in oklab, var(--accent) 45%, var(--brand-2))); }
+.chip[aria-pressed="true"], .chip.on { background: linear-gradient(120deg, var(--accent), color-mix(in oklab, var(--accent) 60%, var(--brand-2))); box-shadow: 0 4px 12px -4px color-mix(in oklab, var(--accent) 70%, transparent); }
+.badge { border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent); }
+.panel { background: linear-gradient(180deg, color-mix(in oklab, var(--panel) 96%, var(--accent)), var(--panel)); }
+.card-hover { position: relative; }
+.card-hover::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none; opacity: 0; transition: opacity .2s;
+  background: linear-gradient(130deg, var(--accent), var(--brand-2), var(--brand-3));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.card-hover:hover::after { opacity: 1; }
+.topic-hero {
+  position: relative; overflow: hidden; border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(50% 120% at 0% 0%, color-mix(in oklab, var(--accent) 26%, transparent), transparent 70%),
+    radial-gradient(40% 100% at 100% 0%, color-mix(in oklab, var(--brand-2) 16%, transparent), transparent 70%);
+}
+.topic-hero::after {
+  content: ""; position: absolute; right: -60px; top: -80px; width: 320px; height: 320px; border-radius: 50%;
+  border: 40px solid color-mix(in oklab, var(--accent) 10%, transparent); pointer-events: none;
+}
+.emoji-tile { background: linear-gradient(140deg, color-mix(in oklab, var(--accent) 35%, var(--panel)), color-mix(in oklab, var(--accent) 8%, var(--panel))); border: 1px solid color-mix(in oklab, var(--accent) 35%, var(--border)); box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--accent) 70%, transparent); }
+.tab-pill { padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap; color: var(--muted); border: 1px solid transparent; transition: all .15s; }
+.tab-pill:hover { color: var(--text); background: var(--panel); border-color: var(--border); }
+.tab-pill[aria-current="page"] { color: white; background: linear-gradient(120deg, var(--accent), color-mix(in oklab, var(--accent) 55%, var(--brand-2))); box-shadow: 0 6px 16px -6px color-mix(in oklab, var(--accent) 80%, transparent); }
+.part-num { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: white; flex-shrink: 0; }
+.sec-card { border-left: 3px solid transparent; }
+.sec-card[data-open="true"] { border-left-color: var(--accent); }
+.q-pill { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; margin-right: 8px; border-radius: 7px; font-size: 11.5px; font-weight: 800; color: white; background: linear-gradient(120deg, var(--accent), color-mix(in oklab, var(--accent) 55%, var(--brand-2))); vertical-align: 2px; }
+.pic-pill { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: color-mix(in oklab, #f59e0b 80%, var(--text)); background: color-mix(in oklab, #f59e0b 16%, transparent); vertical-align: 2px; }

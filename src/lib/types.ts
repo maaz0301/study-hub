@@ -6,6 +6,7 @@ export type Section = {
   isQuestion: boolean;
   summary: string;
   lesson?: boolean;
+  hasVisual?: boolean;
 };
 
 export type Part = { id: string; title: string; blurb?: string; sections: Section[] };
@@ -33,12 +34,15 @@ export type TopicMeta = {
 export type Topic = TopicMeta & {
   parts: Part[];
   cards: Card[];
-  extras: { quiz?: QuizItem[]; steps?: VoiceStep[]; utts?: VoiceUtt[]; ragSteps?: unknown };
+  extras: { quiz?: QuizItem[]; steps?: VoiceStep[]; utts?: VoiceUtt[]; ragSteps?: unknown; mock?: { id: string; q: string; points: string[] }[]; visuals?: Visual[] };
 };
+
+export type Visual = { name: string; part: string; partTitle: string; section: string; sectionTitle: string; svg: string };
 
 export type TopicSummary = TopicMeta & {
   partList: { id: string; title: string; count: number; blurb: string }[];
   hasQuiz: boolean;
+  visualCount?: number;
 };
 
 export type VoiceStep = { ic: string; nm: string; title: string; tool: string; ms: string; inp: string; out: string; risk: string; say: string };

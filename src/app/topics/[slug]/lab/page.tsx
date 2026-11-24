@@ -11,6 +11,7 @@ export default async function LabPage({ params }: { params: Promise<{ slug: stri
   if (!t || !LABS[slug]) notFound();
   let data: unknown = null;
   if (slug === 'voice-ai') data = { steps: t.extras.steps || [] };
+  if (slug === 'genai-rag') data = { mock: t.extras.mock || [] };
   if (slug === 'csharp') {
     // pull program + output pairs out of the lessons for "predict the output"
     data = t.parts.flatMap((p) => p.sections).map((s) => {

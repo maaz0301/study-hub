@@ -16,6 +16,11 @@ export const LABS: Record<string, { title: string; blurb: string }[]> = {
   'genai-rag': [
     { title: 'Chunking playground', blurb: 'Change chunk size and overlap and see the chunks.' },
     { title: 'Cosine similarity', blurb: 'Drag vectors and watch the similarity change.' },
+    { title: 'Mock interview: design scenarios', blurb: 'Pick a system-design scenario, answer in 2 minutes, tick the key points you covered.' },
+  ],
+  'agentic-langchain': [
+    { title: 'LangGraph agent run', blurb: 'Step through a ReAct agent graph: state, tool calls, failures and a human-approval interrupt.' },
+    { title: 'Agentic patterns explorer', blurb: 'Chaining, routing, parallel, orchestrator–workers, evaluator–optimizer, agents and supervisors.' },
   ],
   'voice-ai': [
     { title: 'Pipeline stepper', blurb: 'Walk through the voice agent one micro step at a time.' },

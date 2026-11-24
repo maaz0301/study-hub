@@ -26,7 +26,7 @@ export default async function PartPage({ params }: { params: Promise<{ slug: str
   const next = topic.parts[idx + 1];
 
   return (
-    <div style={{ display: 'grid', gap: 24 }} className="lg:grid-cols-[270px_1fr]">
+    <div style={{ display: 'grid', gap: 24 }} className="grid-cols-[minmax(0,1fr)] lg:grid-cols-[270px_minmax(0,1fr)]">
       <aside className="hidden lg:block">
         <div style={{ position: 'sticky', top: 84, maxHeight: 'calc(100vh - 100px)', overflowY: 'auto', paddingRight: 6 }} className="thin-scroll">
           <div className="faint" style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', margin: '4px 0 10px' }}>Parts</div>

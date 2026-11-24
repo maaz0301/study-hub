@@ -18,6 +18,9 @@ const L = {
   EventLoop: dynamic(() => import('./JsLabs').then((m) => m.EventLoopLab), { loading }),
   Status: dynamic(() => import('./JsLabs').then((m) => m.StatusLab), { loading }),
   Predict: dynamic(() => import('./JsLabs').then((m) => m.PredictLab), { loading }),
+  AgentGraph: dynamic(() => import('./AgentLabs').then((m) => m.AgentGraphLab), { loading }),
+  Patterns: dynamic(() => import('./AgentLabs').then((m) => m.PatternsLab), { loading }),
+  Mock: dynamic(() => import('./AgentLabs').then((m) => m.MockInterviewLab), { loading }),
   Lifecycle: dynamic(() => import('./AiLabs').then((m) => m.LifecycleLab), { loading }),
 };
 
@@ -26,7 +29,8 @@ const MAP: Record<string, ((d: any) => React.ReactNode)[]> = {
   dotnet: [() => <L.Middleware />, () => <L.Di />, () => <L.Linq />],
   mongodb: [() => <L.Mongo />, () => <L.MongoIndex />],
   postgres: [() => <L.Sql />, () => <L.Join />],
-  'genai-rag': [() => <L.Chunk />, () => <L.Cosine />],
+  'genai-rag': [() => <L.Chunk />, () => <L.Cosine />, (d) => <L.Mock items={d?.mock || []} />],
+  'agentic-langchain': [() => <L.AgentGraph />, () => <L.Patterns />],
   'voice-ai': [(d) => <L.Pipeline steps={d?.steps || []} />, () => <L.Latency />],
   'react-node': [() => <L.EventLoop />, () => <L.Status />],
   csharp: [(d) => <L.Predict items={d || []} />],
