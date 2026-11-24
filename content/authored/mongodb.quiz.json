@@ -1,0 +1,13 @@
+[
+ {"q":"What does explain() show when no index is used?","options":["IXSCAN","COLLSCAN","FETCH only","SHARD_MERGE"],"answer":1,"explain":"COLLSCAN means every document was read."},
+ {"q":"ESR rule order for a compound index:","options":["Sort, Equality, Range","Range, Sort, Equality","Equality, Sort, Range","Equality, Range, Sort"],"answer":2,"explain":"Equality first narrows, then the sort comes free, then the range filters."},
+ {"q":"Which is always atomic in MongoDB without a transaction?","options":["Writes to many collections","A write to a single document","Any updateMany","Nothing"],"answer":1,"explain":"Single-document writes (including embedded arrays) are atomic."},
+ {"q":"Best design for 'user has 1 to 3 addresses, always shown with the user'?","options":["Separate collection + $lookup","Embed an array","One collection per address","Store as a string"],"answer":1,"explain":"Bounded, owned, read together: embed."},
+ {"q":"Which stage is MongoDB's LEFT JOIN?","options":["$unwind","$group","$lookup","$merge"],"answer":2,"explain":"$lookup pulls matching documents from another collection into an array."},
+ {"q":"Which operator adds to an array only if the value is not already there?","options":["$push","$addToSet","$set","$inc"],"answer":1,"explain":"$addToSet avoids duplicates."},
+ {"q":"Maximum BSON document size?","options":["1 MB","16 MB","64 MB","No limit"],"answer":1,"explain":"16 MB; bigger files go to GridFS."},
+ {"q":"Why is a timestamp a poor ranged shard key?","options":["Too few values","All new writes go to one shard","It cannot be indexed","It is not unique"],"answer":1,"explain":"Monotonic keys send every insert to the last chunk (a hot shard)."},
+ {"q":"Where should $match go in a pipeline, ideally?","options":["At the end","As early as possible","After $group always","It does not matter"],"answer":1,"explain":"Early $match shrinks the stream and can use indexes."},
+ {"q":"w: 'majority' write concern means…","options":["The write is fire-and-forget","Most replica set members acknowledged it","Only the primary acknowledged","It is written to all shards"],"answer":1,"explain":"Majority-acknowledged writes survive a failover."},
+ {"q":"Efficient pagination for millions of documents:","options":["skip(n).limit(20)","Range/keyset pagination on _id","Load all and slice","$sample"],"answer":1,"explain":"skip still walks skipped documents; keyset jumps straight there via the index."}
+]

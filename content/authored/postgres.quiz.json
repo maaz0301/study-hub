@@ -1,0 +1,14 @@
+[
+ {"q":"Which runs first logically?","options":["SELECT","WHERE","ORDER BY","HAVING"],"answer":1,"explain":"FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT."},
+ {"q":"Filter groups after aggregation with…","options":["WHERE","HAVING","LIMIT","ON"],"answer":1,"explain":"HAVING filters groups; WHERE filters rows before grouping."},
+ {"q":"Customers with no orders — best pattern?","options":["INNER JOIN","LEFT JOIN … WHERE o.id IS NULL","CROSS JOIN","UNION"],"answer":1,"explain":"An anti-join keeps left rows with no match."},
+ {"q":"Default isolation level in PostgreSQL?","options":["Read Uncommitted","Read Committed","Repeatable Read","Serializable"],"answer":1,"explain":"Read Committed is the default."},
+ {"q":"Thanks to MVCC…","options":["Readers block writers","Readers and writers do not block each other","There are no transactions","Rows are overwritten in place"],"answer":1,"explain":"Each transaction reads a snapshot; updates create new row versions."},
+ {"q":"Best index type for a JSONB containment query (@>)?","options":["B-tree","Hash","GIN","BRIN"],"answer":2,"explain":"GIN indexes the keys and values inside JSONB."},
+ {"q":"RANK() for scores 100, 90, 90, 80 gives…","options":["1,2,3,4","1,2,2,3","1,2,2,4","1,1,2,3"],"answer":2,"explain":"RANK leaves gaps after ties; DENSE_RANK would give 1,2,2,3."},
+ {"q":"What prevents SQL injection?","options":["Escaping quotes manually","Parameterized queries","Using UNION ALL","Stored views"],"answer":1,"explain":"Values are sent separately from the SQL text."},
+ {"q":"EXPLAIN ANALYZE shows a Seq Scan on a big table filtered by email. Likely fix?","options":["Add an index on email","Increase LIMIT","Use DISTINCT","Use UNION"],"answer":0,"explain":"A selective filter without an index forces a full scan."},
+ {"q":"Which pgvector operator is cosine distance?","options":["<->","<#>","<=>","@>"],"answer":2,"explain":"<=> cosine distance, <-> Euclidean, <#> negative inner product."},
+ {"q":"UNION vs UNION ALL:","options":["UNION ALL removes duplicates","UNION removes duplicates and is slower","They are identical","UNION only works on one table"],"answer":1,"explain":"UNION de-duplicates (extra sort/hash); UNION ALL keeps everything."},
+ {"q":"Atomic way to avoid overselling stock?","options":["SELECT then UPDATE in app code","UPDATE … SET qty = qty - 1 WHERE qty > 0","DELETE and re-insert","Read Uncommitted"],"answer":1,"explain":"The check and change happen in one statement, so no lost update."}
+]

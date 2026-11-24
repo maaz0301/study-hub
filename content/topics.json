@@ -1,0 +1,54 @@
+{
+  "_help": "Drop any .docx, .html or .md file into content/sources (or .md into content/authored). It becomes a topic automatically. Add an entry here (keyed by file name) to set its title, emoji, colour and category.",
+  "genai-rag-agents.html": {
+    "slug": "genai-rag",
+    "title": "GenAI, RAG, Agents & Vector DBs",
+    "subtitle": "215 interview questions in plain words, concepts, cheat sheets and code",
+    "emoji": "🧠",
+    "accent": "#8b5cf6",
+    "category": "AI Engineering",
+    "order": 10,
+    "handler": "genai"
+  },
+  "voice-ai-agent.html": {
+    "slug": "voice-ai",
+    "title": "Voice AI Agents",
+    "subtitle": "STT → LLM + tools → TTS, latency, scenarios and working code",
+    "emoji": "🎙️",
+    "accent": "#ec4899",
+    "category": "AI Engineering",
+    "order": 11,
+    "handler": "voice"
+  },
+  "ai-engineer-fastapi-flask.docx": {
+    "slug": "ai-fastapi-flask",
+    "title": "AI Engineer, FastAPI & Flask",
+    "subtitle": "69 interview answers with code and architecture diagrams",
+    "emoji": "⚡",
+    "accent": "#10b981",
+    "category": "AI Engineering",
+    "order": 12
+  },
+  "react-node-interview.docx": {
+    "slug": "react-node",
+    "title": "React, Node.js & JavaScript",
+    "subtitle": "HTTP, JS core, React, Express, TypeScript, Mongo, SQL, Redis, Docker",
+    "emoji": "⚛️",
+    "accent": "#06b6d4",
+    "category": "Web Development",
+    "order": 20
+  },
+  "csharp-lessons.html": {
+    "slug": "csharp",
+    "title": "C# Lessons 1–99",
+    "subtitle": "Every lesson explained line by line, with output to predict",
+    "emoji": "🟣",
+    "accent": "#a855f7",
+    "category": ".NET",
+    "order": 30,
+    "handler": "csharp"
+  },
+  "dotnet.md": { "order": 31 },
+  "mongodb.md": { "order": 40 },
+  "postgres.md": { "order": 41 }
+}
