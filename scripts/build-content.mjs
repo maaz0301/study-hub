@@ -74,7 +74,7 @@ function polish(html, { langHint } = {}) {
     if ($p.hasClass('out')) lang = 'plaintext';
     const h = highlight(raw, lang);
     const extra = $p.hasClass('out') ? ' out' : '';
-    $p.replaceWith(`<pre class="code-block${extra}" data-lang="${h.lang}"><code class="hljs">${h.html}</code></pre>`);
+    $p.replaceWith(`<pre class="code-block${extra}" data-lang="${$p.hasClass('out') ? 'output' : h.lang}"><code class="hljs">${h.html}</code></pre>`);
   });
   $('img').each((_, i) => { $(i).attr('loading', 'lazy'); });
   $('a[href]').each((_, a) => {
@@ -339,12 +339,12 @@ function lessonHtml(l) {
   const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
   const steps = l.steps.map(([code, text]) => `<li><pre class="language-javascript">${esc(code)}</pre><p>${inline(text)}</p></li>`).join('');
   return `<p class="sub">${inline(l.sub)}</p>`
-    + `<div class="box big"><h3>The big idea</h3><p>${inline(l.big)}</p></div>`
-    + `<h3>Step by step through the code</h3><ol class="steps">${steps}</ol>`
-    + `<div class="two"><div><h3>Output</h3><details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary><pre class="out">${esc(l.output)}</pre></details></div>`
-    + `<div class="box warn"><h3>Common mistakes</h3><ul>${l.mistakes.map((m) => `<li>${inline(m)}</li>`).join('')}</ul></div></div>`
+    + `<div class="box big"><h3>💡 The big idea</h3><p>${inline(l.big)}</p></div>`
+    + `<h3>🪜 Step by step through the code</h3><ol class="steps">${steps}</ol>`
+    + `<div class="two"><div><h3>🖥️ Output</h3><details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary><pre class="out">${esc(l.output)}</pre></details></div>`
+    + `<div class="box warn"><h3>⚠️ Common mistakes</h3><ul>${l.mistakes.map((m) => `<li>${inline(m)}</li>`).join('')}</ul></div></div>`
     + `<details><summary>Show the full program (${esc(l.file)})</summary><pre class="language-javascript">${esc(l.program)}</pre></details>`
-    + `<p class="run">Run it: <code>${esc(l.run).replace(/\n/g, '<br>')}</code></p>`;
+    + `<p class="run"><span class="run-label">▶ Run it</span><code>${esc(l.run).replace(/\n/g, '<br>')}</code></p>`;
 }
 
 function fromCsharp(file, meta) {
@@ -364,10 +364,19 @@ function fromCsharp(file, meta) {
     });
     $s.find('pre.snip').addClass('language-csharp');
     $s.find('pre.code').addClass('language-csharp');
+    // the output is hidden behind a "predict first" button (the pre sits INSIDE <details>, after the <summary>)
     $s.find('pre.out').each((_, o) => {
-      $(o).wrap('<details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary></details>');
+      $(o).replaceWith(`<details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary>${$.html(o)}</details>`);
     });
-    $s.find('h3').each((_, h) => { if (/output you will see/i.test($(h).text())) $(h).text('Output'); });
+    $s.find('h3').each((_, h) => {
+      const t = $(h).text().trim();
+      const icon = /big idea/i.test(t) ? '💡 ' : /step by step/i.test(t) ? '🪜 ' : /output/i.test(t) ? '🖥️ ' : /common mistakes/i.test(t) ? '⚠️ ' : '';
+      $(h).text(icon + (/output you will see/i.test(t) ? 'Output' : t));
+    });
+    $s.find('p.run').each((_, p) => {
+      const cmd = $(p).find('code').first().text() || $(p).text().replace(/^Run it:\s*/i, '');
+      $(p).html(`<span class="run-label">▶ Run it</span><code>${esc(cmd)}</code>`);
+    });
     const sub = $s.find('p.sub').first().text().trim();
     const big = $s.find('.box.big p').first().text().replace(/\*\*|`/g, '').trim();
     lessons.push({ n, title, sub, big, html: $s.html() });

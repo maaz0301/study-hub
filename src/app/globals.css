@@ -346,3 +346,115 @@ body {
   display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
 }
 .about-box::before { content: "💡"; position: absolute; left: 16px; top: 13px; font-size: 20px; }
+
+/* ================= navbar: Topics menu ================= */
+.nav-topics {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer;
+  color: white; border: 0; font-family: inherit; flex-shrink: 0;
+  background: linear-gradient(120deg, var(--brand), color-mix(in oklab, var(--brand) 55%, var(--brand-2)));
+  box-shadow: 0 8px 20px -8px var(--brand); transition: transform .12s ease, box-shadow .15s;
+}
+.nav-topics:hover { box-shadow: 0 10px 26px -8px var(--brand); transform: translateY(-1px); }
+.nav-topics:active { transform: none; }
+.nav-current {
+  align-items: center; gap: 8px; max-width: 280px; padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 650; min-width: 0;
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--border)); background: color-mix(in oklab, var(--accent) 12%, var(--panel));
+  transition: border-color .15s, background .15s;
+}
+.nav-current:hover { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 20%, var(--panel)); }
+.mega-grid { display: grid; gap: 22px 28px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.mega-cat {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); margin: 0 4px 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.mega-cat::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.mega-link {
+  display: flex; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 14px; border: 1px solid transparent;
+  transition: background .15s, border-color .15s, transform .15s;
+}
+.mega-link:hover { background: color-mix(in oklab, var(--accent) 10%, var(--panel-2)); border-color: color-mix(in oklab, var(--accent) 35%, var(--border)); transform: translateX(2px); }
+.mega-link[data-on="true"] { background: color-mix(in oklab, var(--accent) 14%, var(--panel-2)); border-color: color-mix(in oklab, var(--accent) 50%, var(--border)); }
+.mega-ico {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
+  background: linear-gradient(140deg, color-mix(in oklab, var(--accent) 35%, var(--panel)), color-mix(in oklab, var(--accent) 8%, var(--panel)));
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, var(--border));
+}
+.mega-title { display: block; font-weight: 700; font-size: 14.5px; line-height: 1.3; }
+.mega-sub {
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 1px;
+}
+
+/* ================= lessons (C# and Messaging): nicer layout ================= */
+.prose-x > .sub:first-child { font-size: 1.08em; padding: 2px 0 2px 14px; border-left: 3px solid var(--accent); margin: 4px 0 14px; }
+
+/* the big idea */
+.prose-x .box.big {
+  position: relative; padding: 16px 20px; border-radius: 18px; border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--border));
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 14%, var(--panel)), var(--panel) 70%);
+  box-shadow: 0 10px 28px -16px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+.prose-x .box.big h3 { margin: 0 0 6px; font-size: 1.02em; }
+.prose-x .box.big p { margin: 0; }
+
+/* section headings inside a lesson */
+.prose-x .sub ~ h3, .prose-x .box ~ h3 { margin-top: 1.5em; font-size: 1.1em; letter-spacing: -.01em; }
+
+/* steps: gradient numbers joined by a line, snippets without a cramped copy button */
+.prose-x .steps > li { padding-left: 46px; margin: 0; padding-bottom: 18px; }
+.prose-x .steps > li::before {
+  width: 30px; height: 30px; top: 0; font-size: 13px; z-index: 1;
+  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 50%, var(--brand-2)));
+  box-shadow: 0 6px 14px -6px var(--accent);
+}
+.prose-x .steps > li:not(:last-child)::after {
+  content: ""; position: absolute; left: 14px; top: 34px; bottom: 2px; width: 2px; border-radius: 2px;
+  background: linear-gradient(var(--accent), color-mix(in oklab, var(--accent) 10%, transparent));
+}
+.prose-x .steps > li > p { margin: 8px 0 0; color: var(--text); }
+.prose-x .steps pre.code-block { margin: 0; padding: 12px 16px; font-size: 13px; }
+.prose-x .steps .copy-btn { opacity: 0; transition: opacity .15s; }
+.prose-x .steps li:hover .copy-btn, .prose-x .steps .copy-btn:focus-visible { opacity: 1; }
+.prose-x .code-block:hover .copy-btn { opacity: 1; }
+
+/* output: a button that reveals a terminal */
+.prose-x details.reveal { border: 1.5px dashed color-mix(in oklab, var(--accent) 55%, var(--border)); background: color-mix(in oklab, var(--accent) 6%, var(--panel)); border-radius: 14px; overflow: hidden; }
+.prose-x details.reveal > summary { padding: 12px 16px; color: var(--accent); font-weight: 700; }
+.prose-x details.reveal > summary:hover { background: color-mix(in oklab, var(--accent) 10%, transparent); }
+.prose-x details.reveal[open] { border-style: solid; background: var(--panel); }
+.prose-x details.reveal > pre.code-block { margin: 0 12px 12px; }
+.code-block.out::before { color: #6ee7a8; }
+.code-block.out { border-color: color-mix(in oklab, #10b981 35%, transparent); }
+
+/* common mistakes: one card per mistake */
+.prose-x .box.warn {
+  padding: 16px 18px; border-radius: 18px; border: 1px solid color-mix(in oklab, #ef4444 38%, var(--border));
+  background: linear-gradient(135deg, color-mix(in oklab, #ef4444 9%, var(--panel)), var(--panel) 75%);
+}
+.prose-x .box.warn h3 { margin: 0 0 10px; font-size: 1.02em; }
+.prose-x .box.warn ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.prose-x .box.warn li {
+  position: relative; margin: 0; padding: 9px 12px 9px 40px; border-radius: 12px; line-height: 1.55;
+  background: color-mix(in oklab, #ef4444 6%, var(--panel)); border: 1px solid color-mix(in oklab, #ef4444 20%, var(--border));
+}
+.prose-x .box.warn li::before {
+  content: "✕"; position: absolute; left: 12px; top: 10px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 11px; font-weight: 900; color: white; background: #ef4444;
+}
+.prose-x .two { align-items: start; gap: 18px; margin-top: 1.2em; }
+
+/* the full program + run line */
+.prose-x details:not(.reveal) { border-radius: 14px; }
+.prose-x details:not(.reveal) > summary { font-weight: 700; }
+.prose-x details:not(.reveal)[open] > pre.code-block { margin-top: 4px; }
+.prose-x .run {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 0; padding: 10px 14px; border-radius: 12px;
+  background: var(--code-bg); border: 1px solid color-mix(in oklab, var(--border) 50%, black); color: #c3e88d;
+}
+.prose-x .run .run-label { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fbbf24; font-family: var(--font-sans), sans-serif; }
+.prose-x .run code { background: none !important; border: 0 !important; padding: 0 !important; color: #c3e88d; font-size: 13.5px; }
+.prose-x .run code::before { content: "$ "; color: #6b7699; }
+
+.prose-x .two { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .prose-x .two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.prose-x details.reveal pre.code-block { overflow-x: auto; }

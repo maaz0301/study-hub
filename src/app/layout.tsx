@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const themeScript = `(function(){var t=null;try{t=localStorage.getItem('study-hub-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const topics = getIndex().map((t) => ({ slug: t.slug, title: t.title, emoji: t.emoji, accent: t.accent }));
+  const topics = getIndex().map((t) => ({ slug: t.slug, title: t.title, emoji: t.emoji, accent: t.accent, category: t.category, subtitle: t.subtitle }));
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
       <head>
