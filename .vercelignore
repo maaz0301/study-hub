@@ -1,0 +1,8 @@
+node_modules
+.next
+.claude
+src/content/generated
+public/pglite
+public/originals
+public/content
+public/search-index.json

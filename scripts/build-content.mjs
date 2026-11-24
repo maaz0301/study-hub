@@ -484,6 +484,7 @@ function copyPglite() {
 // ---------- main ----------
 async function main() {
   fs.mkdirSync(path.join(OUT, 'topics'), { recursive: true });
+  fs.mkdirSync(path.join(PUB, 'originals'), { recursive: true });
   for (const f of fs.readdirSync(path.join(OUT, 'topics'))) fs.rmSync(path.join(OUT, 'topics', f));
   const files = [
     ...fs.readdirSync(SRC).map((f) => path.join(SRC, f)),
