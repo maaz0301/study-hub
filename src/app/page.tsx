@@ -8,6 +8,8 @@ const PATH = [
   { slug: 'leetcode', why: 'Practice coding problems in C# and JavaScript.' },
   { slug: 'dotnet', why: 'Build web APIs: DI, middleware, EF Core, async.' },
   { slug: 'postgres', why: 'Relational data: SQL, joins, indexes, transactions.' },
+  { slug: 'messaging', why: 'Redis, MQTT and Kafka: queues, pub/sub and streams.' },
+  { slug: 'leetcode-js', why: 'More coding problems, all in JavaScript.' },
   { slug: 'mongodb', why: 'Document data: CRUD, aggregation, schema design.' },
   { slug: 'react-node', why: 'Full-stack JS: HTTP, React, Node, Express.' },
   { slug: 'ai-fastapi-flask', why: 'Python APIs and AI engineering answers.' },
@@ -37,7 +39,7 @@ export default function Home() {
             Interview prep you can <span className="gradient-text">play with.</span>
           </h1>
           <p className="muted" style={{ fontSize: 18, lineHeight: 1.6, maxWidth: 620, margin: 0 }}>
-            Your notes on GenAI, RAG, agents & LangChain, Voice AI, FastAPI, React, Node, C#, .NET, MongoDB and PostgreSQL, turned into one place to read, test yourself with flashcards and quizzes, and run real code.
+            Your notes on GenAI, RAG, agents & LangChain, Voice AI, Redis/MQTT/Kafka, FastAPI, React, Node, C#, .NET, MongoDB and PostgreSQL, turned into one place to read, test yourself with flashcards and quizzes, and run real code.
           </p>
           <div style={{ display: 'flex', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
             <Link href="#start" className="btn btn-primary" style={{ padding: '12px 20px', fontSize: 15 }}>🚀 Start learning</Link>
@@ -131,7 +133,7 @@ export default function Home() {
 }
 
 function catTitle(c: string) {
-  return ({ 'AI Engineering': 'LLMs, RAG, agents and AI APIs', 'Web Development': 'Frontend and backend JavaScript', '.NET': 'C# and the .NET platform', Databases: 'SQL and NoSQL' } as Record<string, string>)[c] || 'Your notes';
+  return ({ 'AI Engineering': 'LLMs, RAG, agents and AI APIs', 'Web Development': 'Frontend and backend JavaScript', '.NET': 'C# and the .NET platform', Databases: 'SQL and NoSQL', Messaging: 'Queues, pub/sub and event streams', 'Coding Interviews': 'Practice problems in C# and JavaScript' } as Record<string, string>)[c] || 'Your notes';
 }
 
 function SectionHead({ kicker, title, sub }: { kicker: string; title: string; sub?: string }) {

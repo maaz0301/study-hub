@@ -314,7 +314,37 @@ async function fromMarkdown(file, meta) {
   const extras = {};
   const quizFile = file.replace(/\.md$/, '.quiz.json');
   if (fs.existsSync(quizFile)) extras.quiz = JSON.parse(fs.readFileSync(quizFile, 'utf8'));
+
+  // optional <slug>.lessons.mjs: numbered tutorial lessons in the same layout as the C# lessons,
+  // inserted right after the first ("Start here") part
+  const lessonFile = file.replace(/\.md$/, '.lessons.mjs');
+  if (fs.existsSync(lessonFile)) {
+    const { lessons, groups } = await import(pathToFileURL(lessonFile).href);
+    const lessonParts = groups.map((g) => ({
+      id: g.id,
+      title: g.title,
+      blurb: lessons.filter((l) => l.n >= g.from && l.n <= g.to).map((l) => l.title).slice(0, 4).join(', ') + '…',
+      sections: lessons.filter((l) => l.n >= g.from && l.n <= g.to).map((l) => ({
+        id: `lesson-${l.n}`, title: `${l.n}. ${l.title}`, group: null, isQuestion: false, lesson: true, summary: l.sub, html: lessonHtml(l),
+      })),
+    }));
+    parts.splice(1, 0, ...lessonParts);
+    extras.extraCards = lessons.map((l) => ({ id: `lesson-${l.n}`, q: `Lesson ${l.n}: ${l.title}`, a: clip(`${l.sub} ${l.big}`, 420), part: 'Lessons' }));
+  }
   return finishTopic(meta, parts, extras);
+}
+
+/** Same markup as a C# lesson: big idea, numbered steps with a snippet each, output to predict, common mistakes, full program. */
+function lessonHtml(l) {
+  const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
+  const steps = l.steps.map(([code, text]) => `<li><pre class="language-javascript">${esc(code)}</pre><p>${inline(text)}</p></li>`).join('');
+  return `<p class="sub">${inline(l.sub)}</p>`
+    + `<div class="box big"><h3>The big idea</h3><p>${inline(l.big)}</p></div>`
+    + `<h3>Step by step through the code</h3><ol class="steps">${steps}</ol>`
+    + `<div class="two"><div><h3>Output</h3><details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary><pre class="out">${esc(l.output)}</pre></details></div>`
+    + `<div class="box warn"><h3>Common mistakes</h3><ul>${l.mistakes.map((m) => `<li>${inline(m)}</li>`).join('')}</ul></div></div>`
+    + `<details><summary>Show the full program (${esc(l.file)})</summary><pre class="language-javascript">${esc(l.program)}</pre></details>`
+    + `<p class="run">Run it: <code>${esc(l.run).replace(/\n/g, '<br>')}</code></p>`;
 }
 
 function fromCsharp(file, meta) {

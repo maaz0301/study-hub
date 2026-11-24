@@ -9,7 +9,7 @@ const LANG_KEY = 'study-hub-code-lang';
 
 export function PartReader({ sections, layout }: Props) {
   const defaultOpen = useCallback(
-    (s: Section) => (!s.isQuestion && layout !== 'lessons' && sections.length <= 8) || (!!s.hasVisual && !s.isQuestion && layout !== 'lessons'),
+    (s: Section) => !s.lesson && ((!s.isQuestion && layout !== 'lessons' && sections.length <= 8) || (!!s.hasVisual && !s.isQuestion && layout !== 'lessons')),
     [layout, sections.length],
   );
   const [open, setOpen] = useState<Record<string, boolean>>(() => Object.fromEntries(sections.map((s) => [s.id, defaultOpen(s)])));
@@ -55,7 +55,7 @@ export function PartReader({ sections, layout }: Props) {
         </p>
       )}
 
-      <div style={{ display: 'grid', gap: 10 }}>
+      <div style={{ display: 'grid', gap: 10, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         {visible.map((s, i) => {
           const showGroup = s.group && s.group !== lastGroup && s.group !== s.title;
           lastGroup = s.group;

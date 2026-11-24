@@ -18,6 +18,16 @@ export const LABS: Record<string, { title: string; blurb: string }[]> = {
     { title: 'Cosine similarity', blurb: 'Drag vectors and watch the similarity change.' },
     { title: 'Mock interview: design scenarios', blurb: 'Pick a system-design scenario, answer in 2 minutes, tick the key points you covered.' },
   ],
+  messaging: [
+    { title: 'Redis console', blurb: 'A tiny Redis in your browser: strings, lists, hashes, sets, sorted sets, TTL, Pub/Sub and Streams with consumer groups.' },
+    { title: 'Kafka partitions and consumer groups', blurb: 'Send keyed messages, watch them land in partitions, and see consumers share (or idle) as you change the counts.' },
+    { title: 'MQTT topic wildcards', blurb: 'Type a subscription filter with + and # and see which topics match.' },
+    { title: 'MQTT QoS simulator', blurb: 'Drop packets on purpose and see how QoS 0, 1 and 2 behave.' },
+  ],
+  'leetcode-js': [
+    { title: 'Algorithm visualizer', blurb: 'Type your own input and step through two pointers, sliding window, binary search, Kadane, fast/slow and list reversal.' },
+    { title: 'Big O feel', blurb: 'Slide the input size and see how many steps each complexity needs.' },
+  ],
   leetcode: [
     { title: 'Algorithm visualizer', blurb: 'Type your own input and step through two pointers, sliding window, binary search, Kadane, fast/slow and list reversal, with C# and JS code.' },
     { title: 'Big O feel', blurb: 'Slide the input size and see how many steps each complexity needs.' },

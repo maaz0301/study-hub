@@ -77,5 +77,14 @@
       "match": "Coding Questions|Top Interview Questions: Strings",
       "prefix": "JavaScript & Node.js: "
     }
+  },
+  "leetcode-js.md": {
+    "order": 36,
+    "about": "More coding-interview practice, all in modern JavaScript: hash maps, sliding windows, stacks, binary search, trees, graphs, dynamic programming, backtracking and heaps. It ends with Node.js tasks interviewers love (debounce, Promise.all, EventEmitter, retry, promise pool, streams). Learn the pattern first, then write the code yourself."
+  },
+  "messaging.md": {
+    "order": 42,
+    "about": "Message brokers let programs talk without being connected at the same time. Redis gives you fast pub/sub, job queues and streams; MQTT is the lightweight protocol for IoT devices; Kafka is a durable, replayable log for high-volume events. Start with the 27 step-by-step Node.js lessons (like the C# ones), then use the reference sections, diagrams and labs.",
+    "subtitle": "27 hands-on Node.js lessons plus reference: queues, pub/sub and event streams"
   }
 }
