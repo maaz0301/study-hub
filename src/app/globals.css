@@ -561,3 +561,27 @@ section > div[style*="position: relative"], .floaters + div { z-index: 1; }
 .tut-cta { margin: 0 0 18px; }
 .tut-try:hover, .tut-cta:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -18px var(--accent); }
 .tut-go { padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 13px; color: white; background: var(--accent); white-space: nowrap; }
+
+/* ================= footer, back-to-top, page entrance ================= */
+main { animation: pageIn .4s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.site-foot {
+  display: flex; flex-wrap: wrap; gap: 18px 32px; align-items: center; justify-content: space-between; padding: 20px 22px; border-radius: 20px;
+  border: 1px solid var(--border); background: linear-gradient(120deg, color-mix(in oklab, var(--brand) 10%, var(--panel)), var(--panel) 60%);
+}
+.foot-links { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; }
+.foot-links a { color: var(--muted); font-weight: 600; transition: color .15s; }
+.foot-links a:hover { color: var(--brand); }
+.scroll-top {
+  position: fixed; right: 18px; bottom: 18px; z-index: 45; width: 44px; height: 44px; border-radius: 14px; border: 0; cursor: pointer; color: white; font-size: 20px; font-weight: 800;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: 0 12px 28px -10px var(--brand);
+  opacity: 0; transform: translateY(14px) scale(.9); pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.scroll-top[data-show="true"] { opacity: 1; transform: none; pointer-events: auto; }
+.scroll-top:hover { transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { main { animation: none; } }
+
+/* question cards: a little more life */
+.sec-card { transition: border-color .15s, box-shadow .2s, transform .15s; }
+.sec-card:hover { border-color: color-mix(in oklab, var(--accent) 45%, var(--border)); box-shadow: 0 14px 34px -22px var(--accent); }
+.sec-card[data-open="true"] { box-shadow: 0 18px 44px -26px var(--accent); }

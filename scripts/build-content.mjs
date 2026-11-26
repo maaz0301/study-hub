@@ -341,9 +341,39 @@ async function fromMarkdown(file, meta) {
       };
     }).filter(Boolean);
     parts.splice(1, 0, ...lessonParts);
-    extras.extraCards = final.map((l) => ({ id: `lesson-${l.n}`, q: `Lesson ${l.n}: ${l.title}`, a: clip(`${l.sub} ${l.big}`, 420), part: 'Lessons' }));
+    extras.extraCards = final.map((l) => ({ id: `lesson-${l.n}`, q: `Lesson ${l.n}: ${l.title}`, a: clip(`${l.sub} ${l.big}`.replace(/\*\*|`/g, ''), 420), part: 'Lessons' }));
   }
   return finishTopic(meta, parts, extras);
+}
+
+/** content/extra/<slug>.md: more interview questions for any topic, appended as extra parts (also feed search and the quiz). */
+function appendExtra(topic) {
+  const file = path.join(ROOT, 'content', 'extra', `${topic.slug}.md`);
+  if (!fs.existsSync(file)) return;
+  marked.use({ gfm: true });
+  const html = marked.parse(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'));
+  const parts = splitByHeadings(html, { partTag: 'h1', groupTag: 'h2', secTag: null, introTitle: 'More interview questions' });
+  const used = new Set(topic.parts.map((p) => p.id));
+  for (const p of parts) {
+    let id = p.id, n = 2;
+    while (used.has(id)) id = `${p.id}-${n++}`;
+    used.add(id);
+    p.id = id;
+    for (const s of p.sections) {
+      s.html = polish(s.html, {});
+      s.isQuestion = true;
+      s.summary = summaryOf(s.html);
+      if (s.summary) topic.cards.push({ id: `${p.id}/${s.id}`, q: cleanQ(s.title), a: s.summary, part: p.title });
+    }
+    topic.parts.push(p);
+  }
+  topic.stats = {
+    ...topic.stats,
+    parts: topic.parts.length,
+    sections: topic.parts.reduce((n, p) => n + p.sections.length, 0),
+    questions: topic.parts.reduce((n, p) => n + p.sections.filter((x) => x.isQuestion).length, 0),
+    cards: topic.cards.length,
+  };
 }
 
 /** Number a topic's lessons 1..n and fix "lesson N" / "NN-name.mjs" references inside their text. */
@@ -617,6 +647,7 @@ async function main() {
       }
       topic.stats = { ...topic.stats, parts: topic.parts.length, sections: topic.parts.reduce((n, p) => n + p.sections.length, 0), questions: topic.parts.reduce((n, p) => n + p.sections.filter((x) => x.isQuestion).length, 0), cards: topic.cards.length };
     }
+    appendExtra(topic);
     built[topic.slug] = topic;
     if (/\.html?$/i.test(base)) {
       fs.copyFileSync(file, path.join(PUB, 'originals', base));
