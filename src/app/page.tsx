@@ -17,23 +17,35 @@ const TRY_IT = [
 const FLOATERS = [['🧠', 56, 2, 0], ['📨', 93, 3, 1.2], ['🐘', 97, 50, 2.1], ['🍃', 57, 90, 0.6], ['⚛️', 86, 92, 1.8], ['🔷', 74, 1, 2.7], ['🤖', 47, 94, 3.2], ['🎙️', 98, 80, 0.3]] as const;
 
 const PATH = [
-  { slug: 'csharp', why: 'Learn the language: types, loops, classes, collections.' },
-  { slug: 'leetcode', why: 'Practice coding problems in C# and JavaScript.' },
-  { slug: 'dotnet', why: 'Build web APIs: DI, middleware, EF Core, async.' },
-  { slug: 'postgres', why: 'Relational data: SQL, joins, indexes, transactions.' },
-  { slug: 'redis', why: 'Pub/Sub, queues and Streams with Node.js.' },
-  { slug: 'mqtt', why: 'The IoT messaging protocol: topics, QoS, sessions.' },
-  { slug: 'kafka', why: 'Event streaming: partitions and consumer groups.' },
-  { slug: 'messaging', why: 'Compare them and learn the patterns.' },
-  { slug: 'cicd', why: 'Automate build, test and release with GitHub Actions.' },
-  { slug: 'n8n', why: 'Automate work between apps with workflows.' },
-  { slug: 'leetcode-js', why: 'More coding problems, all in JavaScript.' },
-  { slug: 'mongodb', why: 'Document data: CRUD, aggregation, schema design.' },
-  { slug: 'react-node', why: 'Full-stack JS: HTTP, React, Node, Express.' },
-  { slug: 'ai-fastapi-flask', why: 'Python APIs and AI engineering answers.' },
-  { slug: 'genai-rag', why: 'LLMs, embeddings, RAG, agents, vector DBs.' },
-  { slug: 'agentic-langchain', why: 'Agents, tools, memory, LangChain and LangGraph.' },
-  { slug: 'voice-ai', why: 'Put it together: a real-time voice agent.' },
+  { stage: 'Language and coding', note: 'Start here: learn to write code and solve problems.', items: [
+    { slug: 'csharp', why: 'Learn the language: types, loops, classes, collections.' },
+    { slug: 'leetcode', why: 'Practice coding problems in C# and JavaScript.' },
+    { slug: 'leetcode-js', why: 'More coding problems, all in JavaScript.' },
+  ] },
+  { stage: 'Build web apps and APIs', note: 'Then turn code into real applications.', items: [
+    { slug: 'react-node', why: 'Full-stack JS: HTTP, React, Node, Express.' },
+    { slug: 'dotnet', why: 'Web APIs: DI, middleware, EF Core, async.' },
+    { slug: 'ai-fastapi-flask', why: 'Python APIs with FastAPI.' },
+  ] },
+  { stage: 'Store your data', note: 'Apps need a database.', items: [
+    { slug: 'postgres', why: 'Relational data: SQL, joins, indexes, transactions.' },
+    { slug: 'mongodb', why: 'Document data: CRUD, aggregation, schema design.' },
+    { slug: 'redis', why: 'Cache, queues and Streams.' },
+  ] },
+  { stage: 'Connect systems with messages', note: 'Services talk through events.', items: [
+    { slug: 'mqtt', why: 'The IoT messaging protocol: topics, QoS, sessions.' },
+    { slug: 'kafka', why: 'Event streaming: partitions and consumer groups.' },
+    { slug: 'messaging', why: 'Compare them and learn the patterns.' },
+  ] },
+  { stage: 'Ship and automate', note: 'Release safely and automate the boring parts.', items: [
+    { slug: 'cicd', why: 'Build, test and deploy with GitHub Actions and EC2.' },
+    { slug: 'n8n', why: 'Automate work between apps with workflows.' },
+  ] },
+  { stage: 'AI engineering', note: 'Finally, add intelligence.', items: [
+    { slug: 'genai-rag', why: 'LLMs, embeddings, RAG, agents, vector DBs.' },
+    { slug: 'agentic-langchain', why: 'Agents, tools, memory, LangChain and LangGraph.' },
+    { slug: 'voice-ai', why: 'Put it together: a real-time voice agent.' },
+  ] },
 ];
 
 export default function Home() {
@@ -41,7 +53,8 @@ export default function Home() {
   const bySlug = Object.fromEntries(index.map((t) => [t.slug, t]));
   const totals = index.reduce((a, t) => ({ s: a.s + t.stats.sections, q: a.q + t.stats.questions, c: a.c + t.stats.cards }), { s: 0, q: 0, c: 0 });
   const labCount = Object.values(LABS).reduce((n, l) => n + l.length, 0);
-  const path = PATH.filter((p) => bySlug[p.slug]);
+  let n = 0;
+  const stages = PATH.map((g) => ({ ...g, items: g.items.filter((p) => bySlug[p.slug]).map((p) => ({ ...p, n: ++n })) })).filter((g) => g.items.length);
   const showcase = ['genai-rag:rag-pipeline', 'agentic-langchain:agent-loop', 'react-node:event-loop', 'dotnet:aspnet-pipeline']
     .map((k) => { const [slug, name] = k.split(':'); const v = getTopic(slug)?.extras.visuals?.find((x) => x.name === name); return v && { slug, v, t: bySlug[slug] }; })
     .filter(Boolean) as { slug: string; v: { name: string; svg: string }; t: (typeof index)[0] }[];
@@ -136,22 +149,31 @@ export default function Home() {
 
       {/* start here */}
       <section id="start" style={{ scrollMarginTop: 80, marginBottom: 48 }}>
-        <SectionHead kicker="Start here" title="A suggested learning path" sub="Go top to bottom the first time. Each step builds on the one before. Later, jump anywhere with search (press /)." />
-        <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
-          {path.map((p, i) => {
-            const t = bySlug[p.slug];
-            return (
-              <li key={p.slug}>
-                <Link href={`/topics/${t.slug}`} className="panel card-hover" style={{ display: 'flex', gap: 14, padding: 16, alignItems: 'flex-start', ['--accent' as string]: t.accent, height: '100%' }}>
-                  <span className="part-num" style={{ background: `linear-gradient(135deg, ${t.accent}, color-mix(in oklab, ${t.accent} 50%, white))` }}>{i + 1}</span>
-                  <span style={{ minWidth: 0 }}>
-                    <span style={{ display: 'block', fontWeight: 700 }}>{t.emoji} {t.title}</span>
-                    <span className="muted" style={{ display: 'block', fontSize: 13.5, marginTop: 3 }}>{p.why}</span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
+        <SectionHead kicker="Start here" title="A suggested learning path" sub="Follow the numbers 1, 2, 3… from the top. Each step builds on the one before. Later, jump anywhere with search (press /)." />
+        <ol className="road">
+          {stages.map((g, gi) => (
+            <li key={g.stage} className="road-stage">
+              <div className="road-dot">{gi + 1}</div>
+              <div className="road-head"><b>{g.stage}</b><span className="muted"> · {g.note}</span></div>
+              <div className="road-row">
+                {g.items.map((p, k) => {
+                  const t = bySlug[p.slug];
+                  return (
+                    <div key={p.slug} className="road-item">
+                      <Link href={`/topics/${t.slug}`} className="panel card-hover road-card" style={{ ['--accent' as string]: t.accent }}>
+                        <span className="part-num" style={{ background: `linear-gradient(135deg, ${t.accent}, color-mix(in oklab, ${t.accent} 50%, white))` }}>{p.n}</span>
+                        <span style={{ minWidth: 0 }}>
+                          <span style={{ display: 'block', fontWeight: 700 }}>{t.emoji} {t.title}</span>
+                          <span className="muted" style={{ display: 'block', fontSize: 13.5, marginTop: 3 }}>{p.why}</span>
+                        </span>
+                      </Link>
+                      {k < g.items.length - 1 && <span className="road-arrow" aria-hidden>➜</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </li>
+          ))}
         </ol>
         <div className="panel" style={{ marginTop: 14, padding: '14px 18px', display: 'flex', flexWrap: 'wrap', gap: '8px 22px', alignItems: 'center', fontSize: 14 }}>
           <b>Daily 30-minute routine:</b>

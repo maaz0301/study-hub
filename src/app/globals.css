@@ -623,3 +623,15 @@ main { animation: pageIn .4s cubic-bezier(.2,.8,.2,1) both; }
 .pg-link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 12.5px; cursor: pointer; font-weight: 650; }
 
 .pg-avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; color: white; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+
+/* ================= Learning path roadmap ================= */
+.road { list-style: none; margin: 0; padding: 0 0 0 28px; position: relative; display: grid; gap: 22px; }
+.road::before { content: ''; position: absolute; left: 13px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: linear-gradient(180deg, var(--brand), var(--brand-2)); opacity: .55; }
+.road-stage { position: relative; }
+.road-dot { position: absolute; left: -28px; top: -1px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: white; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: 0 0 0 5px var(--bg); }
+.road-head { margin: 0 0 10px 12px; font-size: 15px; }
+.road-row { display: flex; flex-wrap: wrap; gap: 10px 0; align-items: stretch; }
+.road-item { display: flex; align-items: center; flex: 1 1 280px; min-width: 0; }
+.road-card { display: flex; gap: 12px; padding: 14px; align-items: flex-start; flex: 1; min-width: 0; height: 100%; }
+.road-arrow { flex: 0 0 34px; text-align: center; color: var(--brand); font-size: 20px; font-weight: 800; }
+@media (max-width: 760px) { .road-arrow { display: none; } .road-item { flex-basis: 100%; } }
