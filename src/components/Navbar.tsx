@@ -3,6 +3,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { CommandPalette } from './CommandPalette';
+import { logout, useProgress } from '@/lib/progress';
+
+function AccountButton() {
+  const { user, ready, configured } = useProgress();
+  const path = usePathname() || '/';
+  if (!ready || !configured) return null;
+  if (!user) return <Link href={`/login?next=${encodeURIComponent(path)}`} className="btn btn-sm btn-primary" style={{ flexShrink: 0 }}>Log in</Link>;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+      <span className="pg-avatar" title={user.email}>{(user.name || user.email)[0].toUpperCase()}</span>
+      <button className="btn btn-sm btn-ghost" onClick={() => logout()}>Log out</button>
+    </span>
+  );
+}
 
 type T = { slug: string; title: string; emoji: string; accent: string; category: string; subtitle: string };
 
@@ -84,6 +98,7 @@ export function Navbar({ topics }: { topics: T[] }) {
             <span className="hidden sm:inline muted" style={{ fontWeight: 500 }}>Search</span>
             <span className="kbd hidden sm:inline">Ctrl K</span>
           </button>
+          <AccountButton />
           <button className="btn btn-sm btn-ghost" onClick={toggleTheme} aria-label="Toggle dark mode" title="Toggle theme" style={{ flexShrink: 0 }}>
             <span className="dark:hidden">🌙</span><span className="hidden dark:inline">☀️</span>
           </button>

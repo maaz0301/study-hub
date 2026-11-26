@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { getIndex, getTopic } from '@/lib/content';
 import { LABS } from '@/lib/labs';
 import { Body } from '@/components/PartReader';
+import { DoneButton, ProgressBar, SideMark, SyncBox } from '@/components/ProgressUI';
 
 export function generateStaticParams() {
   return getIndex().flatMap((t) => Array.from({ length: (t.lessonCount || 0) >= 3 ? t.lessonCount! : 0 }, (_, i) => ({ slug: t.slug, n: String(i + 1) })));
@@ -55,10 +56,11 @@ export default async function TutorialPage({ params }: { params: Promise<{ slug:
         <div key={g.title} style={{ marginBottom: 10 }}>
           <div className="tut-side-group">{g.title.replace(/\s*\(lessons? [\d–]+\)\s*$/, '')}</div>
           {g.items.map((it) => (
-            <Link key={it.k} href={href(it.k)} className="tut-side-link" aria-current={it.k === i ? 'page' : undefined}>{it.title}</Link>
+            <Link key={it.k} href={href(it.k)} className="tut-side-link" aria-current={it.k === i ? 'page' : undefined}>{it.title}<SideMark slug={slug} n={it.k + 1} /></Link>
           ))}
         </div>
       ))}
+      <SyncBox />
     </nav>
   );
 
@@ -72,6 +74,7 @@ export default async function TutorialPage({ params }: { params: Promise<{ slug:
         </details>
 
         <div className="faint" style={{ fontSize: 13, marginBottom: 6 }}>{topic.title} › Tutorial › {cur.partTitle.replace(/\s*\(lessons? [\d–]+\)\s*$/, '')}</div>
+        <ProgressBar slug={slug} total={lessons.length} />
         <Nav />
         <h2 className="tut-title">{cur.title}</h2>
         <div className="panel tut-body">
@@ -84,6 +87,7 @@ export default async function TutorialPage({ params }: { params: Promise<{ slug:
             <span className="tut-go">Open →</span>
           </Link>
         )}
+        <DoneButton slug={slug} n={i + 1} total={lessons.length} nextHref={next ? href(i + 1) : undefined} />
         <Nav bottom />
       </div>
     </div>

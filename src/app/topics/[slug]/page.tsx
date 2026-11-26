@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getIndex } from '@/lib/content';
 import { LABS } from '@/lib/labs';
+import { ProgressBar } from '@/components/ProgressUI';
 
 const HUES = ['#8b5cf6', '#06b6d4', '#f59e0b', '#ec4899', '#10b981', '#3b82f6', '#ef4444', '#84cc16', '#f97316', '#14b8a6'];
 
@@ -31,6 +32,7 @@ export default async function TopicOverview({ params }: { params: Promise<{ slug
             <span className="tut-go">Start →</span>
           </Link>
         )}
+        {(t.lessonCount || 0) >= 3 && <ProgressBar slug={slug} total={t.lessonCount!} />}
         {t.about && (
           <div className="about-box" style={{ marginBottom: 18 }}>
             <b>In short: </b>{t.about}
