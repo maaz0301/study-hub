@@ -15,7 +15,6 @@ export default async function TopicLayout({ children, params }: { children: Reac
   const tabs = [
     { href: `/topics/${slug}`, label: 'Overview', icon: '📚', exact: true },
     { href: `/topics/${slug}/visuals`, label: 'Visual guide', icon: '🖼️', hide: !t.visualCount },
-    { href: `/topics/${slug}/flashcards`, label: 'Flashcards', icon: '🃏', hide: !t.stats.cards },
     { href: `/topics/${slug}/quiz`, label: 'Quiz', icon: '✅', hide: t.stats.cards < 4 && !t.hasQuiz },
     { href: `/topics/${slug}/lab`, label: 'Playground', icon: '🧪', hide: !LABS[slug] },
     { href: `/topics/${slug}/original`, label: 'Original page', icon: '📄', hide: !t.original },
@@ -34,7 +33,8 @@ export default async function TopicLayout({ children, params }: { children: Reac
               <h1 style={{ margin: 0, fontSize: 'clamp(24px, 3.8vw, 36px)', fontWeight: 850, letterSpacing: '-0.03em', lineHeight: 1.12 }}>{t.title}</h1>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '8px 0 2px' }}>
                 <span className="badge">{t.stats.sections} sections</span>
-                {t.stats.cards > 0 && <span className="badge">{t.stats.cards} flashcards</span>}
+                {t.hasQuiz && <span className="badge">✅ quiz</span>}
+                {LABS[slug] && <span className="badge">🧪 {LABS[slug].length} lab{LABS[slug].length === 1 ? '' : 's'}</span>}
                 {!!t.visualCount && <span className="badge">🖼️ {t.visualCount} animated diagrams</span>}
               </div>
               <p className="muted" style={{ margin: '4px 0 0', fontSize: 15 }}>{t.subtitle}</p>

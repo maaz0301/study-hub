@@ -11,14 +11,14 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-`npm run dev` and `npm run build` first run `scripts/build-content.mjs`, which converts every source file into JSON pages, flashcards and a search index.
+`npm run dev` and `npm run build` first run `scripts/build-content.mjs`, which converts every source file into JSON pages and a search index.
 
 ## Features
 
-- **Reader**: every topic split into parts and sections. Questions start collapsed so you can test yourself first. Search, flashcards and quizzes work on every topic.
+- **Reader**: every topic split into parts and sections. Questions start collapsed so you can test yourself first. Search and quizzes work on every topic.
 - **Search** (`/` or `Ctrl K`): full-text search across ~1,000 sections in every topic.
-- **Flashcards**: Leitner boxes, weakest cards first, keyboard shortcuts (Space, ← →).
-- **Quiz**: hand-written multiple choice (for .NET, MongoDB, PostgreSQL) mixed with questions generated from each topic's flashcards.
+
+- **Quiz**: hand-written multiple choice (for .NET, MongoDB, PostgreSQL) mixed with questions generated from each topic's Q&A.
 - **Playgrounds**:
   - PostgreSQL: a real Postgres (PGlite, WebAssembly) running in the browser with a shop database, plus a JOIN visualizer.
   - MongoDB: real `find()` and aggregation pipelines (via mingo), plus an index explain simulator.
@@ -42,4 +42,4 @@ How files are split:
 - **Markdown**: `#` → part, `##` → section. Add `name.quiz.json` next to `name.md` for hand-written quiz questions.
 - **HTML**: `h1` → part, `h2`/`h3` → sections.
 
-Any section titled like `Q12. …` or ending with `?` becomes a flashcard and a quiz item.
+Any section titled like `Q12. …` or ending with `?` becomes a quiz item.

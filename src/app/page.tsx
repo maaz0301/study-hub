@@ -2,6 +2,17 @@ import Link from 'next/link';
 import { categories, getIndex, getTopic } from '@/lib/content';
 import { LABS } from '@/lib/labs';
 import { RandomQuestion } from '@/components/RandomQuestion';
+import { CountUp, RotatingWord, Typer } from '@/components/HomeFx';
+
+const TRY_IT = [
+  { slug: 'messaging', href: '/topics/messaging/lab', emoji: '📨', title: 'Redis console', blurb: 'Type real Redis commands: lists, streams, consumer groups.', cmd: 'XADD orders * userId 7 total 59', color: '#f43f5e' },
+  { slug: 'postgres', href: '/topics/postgres/lab', emoji: '🐘', title: 'Real PostgreSQL', blurb: 'A full Postgres running inside your browser tab.', cmd: 'SELECT city, SUM(total) FROM orders GROUP BY 1', color: '#3b82f6' },
+  { slug: 'leetcode', href: '/topics/leetcode/lab', emoji: '🧩', title: 'Algorithm visualizer', blurb: 'Type your own input and watch the pointers move.', cmd: 'L→ 1 3 4 6 8 11 ←R   sum = 10 ✓', color: '#eab308' },
+  { slug: 'agentic-langchain', href: '/topics/agentic-langchain/lab', emoji: '🤖', title: 'LangGraph agent run', blurb: 'Step through an agent: tools, failures, human approval.', cmd: 'agent → create_refund → ⏸ approve?', color: '#f97316' },
+  { slug: 'dotnet', href: '/topics/dotnet/lab', emoji: '🔷', title: 'Middleware pipeline', blurb: 'Reorder ASP.NET middleware and send a request.', cmd: 'UseAuthentication → UseAuthorization → 200 OK', color: '#6366f1' },
+  { slug: 'mongodb', href: '/topics/mongodb/lab', emoji: '🍃', title: 'MongoDB playground', blurb: 'Run aggregation pipelines on sample data.', cmd: 'db.orders.aggregate([{ $match: … }])', color: '#22c55e' },
+];
+const FLOATERS = [['🧠', 56, 2, 0], ['📨', 93, 3, 1.2], ['🐘', 97, 50, 2.1], ['🍃', 57, 90, 0.6], ['⚛️', 86, 92, 1.8], ['🔷', 74, 1, 2.7], ['🤖', 47, 94, 3.2], ['🎙️', 98, 80, 0.3]] as const;
 
 const PATH = [
   { slug: 'csharp', why: 'Learn the language: types, loops, classes, collections.' },
@@ -28,28 +39,79 @@ export default function Home() {
     .map((k) => { const [slug, name] = k.split(':'); const v = getTopic(slug)?.extras.visuals?.find((x) => x.name === name); return v && { slug, v, t: bySlug[slug] }; })
     .filter(Boolean) as { slug: string; v: { name: string; svg: string }; t: (typeof index)[0] }[];
   const totalVisuals = index.reduce((n, t) => n + (t.visualCount || 0), 0);
+  const totalQuestions = index.reduce((n, t) => n + t.stats.questions, 0);
+  const tryIt = TRY_IT.filter((x) => bySlug[x.slug]);
+  const stats = [
+    { n: index.length, label: 'topics', icon: '📚', c: '#8b5cf6' },
+    { n: totals.s, label: 'sections', icon: '🧩', c: '#06b6d4' },
+    { n: totalQuestions, label: 'interview questions', icon: '🎯', c: '#f59e0b' },
+    { n: totalVisuals, label: 'animated diagrams', icon: '🖼️', c: '#ec4899' },
+    { n: labCount, label: 'hands-on labs', icon: '🧪', c: '#10b981' },
+  ];
 
   return (
     <div className="container-x">
       {/* hero */}
-      <section style={{ padding: '56px 0 28px', display: 'grid', gap: 28 }} className="lg:grid-cols-[1.25fr_1fr] lg:items-center">
-        <div>
+      <section style={{ padding: '56px 0 28px', display: 'grid', gap: 28, position: 'relative' }} className="lg:grid-cols-[1.25fr_1fr] lg:items-center">
+        <div className="floaters" aria-hidden>
+          {FLOATERS.map(([e, x, y, d], k) => <span key={k} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${d}s` }}>{e}</span>)}
+        </div>
+        <div style={{ position: 'relative' }}>
           <span className="badge" style={{ marginBottom: 16 }}>✨ {index.length} topics · {totals.s} sections · {labCount} hands-on labs</span>
           <h1 style={{ fontSize: 'clamp(34px, 5.4vw, 60px)', lineHeight: 1.04, letterSpacing: '-0.035em', fontWeight: 850, margin: '14px 0 16px' }}>
-            Interview prep you can <span className="gradient-text">play with.</span>
+            Interview prep you can <RotatingWord words={['play with', 'run live', 'see in motion', 'actually master']} />
           </h1>
           <p className="muted" style={{ fontSize: 18, lineHeight: 1.6, maxWidth: 620, margin: 0 }}>
-            Your notes on GenAI, RAG, agents & LangChain, Voice AI, Redis/MQTT/Kafka, FastAPI, React, Node, C#, .NET, MongoDB and PostgreSQL, turned into one place to read, test yourself with flashcards and quizzes, and run real code.
+            Your notes on GenAI, RAG, agents & LangChain, Voice AI, Redis/MQTT/Kafka, FastAPI, React, Node, C#, .NET, MongoDB and PostgreSQL, turned into one place to read, watch as animated diagrams, test yourself with quizzes, and run as real code in your browser.
           </p>
           <div style={{ display: 'flex', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
             <Link href="#start" className="btn btn-primary" style={{ padding: '12px 20px', fontSize: 15 }}>🚀 Start learning</Link>
             <Link href="/topics/postgres/lab" className="btn" style={{ padding: '12px 20px', fontSize: 15 }}>🐘 Try real SQL in the browser</Link>
+            <Link href="/topics/messaging" className="btn" style={{ padding: '12px 20px', fontSize: 15 }}>📨 New: Redis · MQTT · Kafka</Link>
           </div>
         </div>
         <RandomQuestion />
       </section>
 
-      <div style={{ height: 24 }} />
+      {/* topic ticker */}
+      <div className="marquee" aria-label="All topics">
+        <div className="marquee-track">
+          {[...index, ...index].map((t, k) => (
+            <Link key={k} href={`/topics/${t.slug}`} className="marquee-chip" style={{ ['--accent' as string]: t.accent }} tabIndex={k >= index.length ? -1 : 0}>
+              <span>{t.emoji}</span>{t.title}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* animated stats */}
+      <section className="stat-strip" aria-label="Site statistics">
+        {stats.map((x) => (
+          <div key={x.label} className="stat-tile" style={{ ['--accent' as string]: x.c }}>
+            <div className="stat-ico">{x.icon}</div>
+            <div className="stat-num"><CountUp to={x.n} /></div>
+            <div className="stat-label">{x.label}</div>
+          </div>
+        ))}
+      </section>
+
+      {/* try it now */}
+      <section style={{ marginBottom: 48 }}>
+        <SectionHead kicker="Try it now" title="Don’t just read it. Run it." sub="Real tools running in your browser: no install, no sign-up." />
+        <div className="try-grid">
+          {tryIt.map((x, i) => (
+            <Link key={x.slug} href={x.href} className="try-card" style={{ ['--accent' as string]: x.color, animationDelay: `${i * 0.07}s` }}>
+              <div className="try-top">
+                <span className="try-emoji">{x.emoji}</span>
+                <span className="try-go">Open lab →</span>
+              </div>
+              <h3>{x.title}</h3>
+              <p>{x.blurb}</p>
+              <div className="try-term"><span className="try-prompt">$</span> <Typer text={x.cmd} /></div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* learn with pictures */}
       {showcase.length > 0 && (
@@ -87,7 +149,7 @@ export default function Home() {
         <div className="panel" style={{ marginTop: 14, padding: '14px 18px', display: 'flex', flexWrap: 'wrap', gap: '8px 22px', alignItems: 'center', fontSize: 14 }}>
           <b>Daily 30-minute routine:</b>
           <span>① read one part (10 min)</span>
-          <span>② 20 flashcards (10 min)</span>
+          <span>② a 10-question quiz (10 min)</span>
           <span>③ one quiz + one lab (10 min)</span>
         </div>
       </section>
@@ -110,7 +172,6 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span className="badge">{t.stats.sections} sections</span>
-                  {t.stats.cards > 0 && <span className="badge">{t.stats.cards} flashcards</span>}
                   {LABS[t.slug] && <span className="badge">🧪 {LABS[t.slug].length} lab{LABS[t.slug].length === 1 ? '' : 's'}</span>}
                   {t.hasQuiz && <span className="badge">✅ quiz</span>}
                   {!!t.visualCount && <span className="badge">🖼️ {t.visualCount} diagrams</span>}
@@ -125,7 +186,7 @@ export default function Home() {
         <h3 style={{ margin: '0 0 6px', fontSize: 17 }}>➕ Add your own files</h3>
         <p className="muted" style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6 }}>
           Drop any <code>.docx</code>, <code>.html</code> or <code>.md</code> file into <code>content/sources/</code> and restart <code>npm run dev</code>.
-          Headings become parts and sections, questions become flashcards and quiz items, and the file shows up in search. Set its title, emoji and colour in <code>content/topics.json</code>.
+          Headings become parts and sections, questions become quiz items, and the file shows up in search. Set its title, emoji and colour in <code>content/topics.json</code>.
         </p>
       </section>
     </div>

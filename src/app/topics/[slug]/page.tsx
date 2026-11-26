@@ -50,7 +50,6 @@ export default async function TopicOverview({ params }: { params: Promise<{ slug
           <div style={{ fontWeight: 700, marginBottom: 10 }}>Practice</div>
           <div style={{ display: 'grid', gap: 8 }}>
             {!!t.visualCount && <Link className="btn btn-primary" style={{ justifyContent: 'flex-start' }} href={`/topics/${slug}/visuals`}>🖼️ Learn with {t.visualCount} pictures</Link>}
-            {t.stats.cards > 0 && <Link className="btn" style={{ justifyContent: 'flex-start' }} href={`/topics/${slug}/flashcards`}>🃏 {t.stats.cards} flashcards</Link>}
             {(t.stats.cards >= 4 || t.hasQuiz) && <Link className="btn" style={{ justifyContent: 'flex-start' }} href={`/topics/${slug}/quiz`}>✅ Take a quiz</Link>}
             {t.original && <Link className="btn" style={{ justifyContent: 'flex-start' }} href={`/topics/${slug}/original`}>🖼️ Original interactive page</Link>}
           </div>

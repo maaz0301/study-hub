@@ -70,7 +70,7 @@ export default async function PartPage({ params }: { params: Promise<{ slug: str
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 28, flexWrap: 'wrap' }}>
           {prev ? <Link className="btn" href={`/topics/${slug}/${prev.id}`}>← {prev.title}</Link> : <span />}
           {next ? <Link className="btn btn-primary" href={`/topics/${slug}/${next.id}`}>{next.title} →</Link>
-            : <Link className="btn btn-primary" href={`/topics/${slug}/flashcards`}>Finished! Test yourself with flashcards →</Link>}
+            : <Link className="btn btn-primary" href={`/topics/${slug}/quiz`}>Finished! Test yourself with the quiz →</Link>}
         </div>
       </div>
     </div>
