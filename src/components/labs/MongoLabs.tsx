@@ -34,6 +34,7 @@ const orders: Doc[] = [
   { _id: 109, customerId: 4, status: 'shipped', date: '2025-05-18', items: [{ sku: 'LMP', qty: 1, price: 32 }] },
 ];
 const DB: Record<string, Doc[]> = { customers, products, orders };
+export const SAMPLE = { customers, products, orders };
 
 const EXAMPLES: { label: string; code: string }[] = [
   { label: 'find + filter', code: `db.customers.find({ city: "Lahore" })` },

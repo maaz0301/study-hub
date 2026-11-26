@@ -36,18 +36,26 @@ export default async function TopicOverview({ params }: { params: Promise<{ slug
             <b>In short: </b>{t.about}
           </div>
         )}
-        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))' }}>
-          {t.partList.map((p, i) => (
-            <Link key={p.id} href={`/topics/${slug}/${p.id}`} className="panel card-hover" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <span className="part-num" style={{ background: `linear-gradient(135deg, ${HUES[i % HUES.length]}, color-mix(in oklab, ${HUES[i % HUES.length]} 55%, white))` }}>{i + 1}</span>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, lineHeight: 1.35 }}>{p.title}</h3>
-              </div>
-              <p className="muted" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.blurb}</p>
-              <div className="faint" style={{ marginTop: 'auto', fontSize: 12.5 }}>{p.count} section{p.count === 1 ? '' : 's'} →</div>
-            </Link>
-          ))}
-        </div>
+        {[
+          { head: '📖 Tutorial', list: t.partList.filter((p) => p.lesson) },
+          { head: t.partList.some((p) => p.lesson) ? '🎯 Interview questions & reference' : '📚 Sections', list: t.partList.filter((p) => !p.lesson) },
+        ].filter((g) => g.list.length).map((g, gi) => (
+          <div key={g.head} style={{ marginTop: gi ? 26 : 0 }}>
+            <h3 className="ov-head">{g.head}</h3>
+            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))' }}>
+              {g.list.map((p, i) => (
+                <Link key={p.id} href={`/topics/${slug}/${p.id}`} className="panel card-hover" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <span className="part-num" style={{ background: `linear-gradient(135deg, ${HUES[i % HUES.length]}, color-mix(in oklab, ${HUES[i % HUES.length]} 55%, white))` }}>{i + 1}</span>
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, lineHeight: 1.35 }}>{p.title}</h3>
+                  </div>
+                  <p className="muted" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.blurb}</p>
+                  <div className="faint" style={{ marginTop: 'auto', fontSize: 12.5 }}>{p.count} section{p.count === 1 ? '' : 's'} →</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       <aside style={{ display: 'grid', gap: 14, position: 'sticky', top: 84 }}>

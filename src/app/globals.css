@@ -585,3 +585,28 @@ main { animation: pageIn .4s cubic-bezier(.2,.8,.2,1) both; }
 .sec-card { transition: border-color .15s, box-shadow .2s, transform .15s; }
 .sec-card:hover { border-color: color-mix(in oklab, var(--accent) 45%, var(--border)); box-shadow: 0 14px 34px -22px var(--accent); }
 .sec-card[data-open="true"] { box-shadow: 0 18px 44px -26px var(--accent); }
+
+/* ================= Try it Yourself ================= */
+.tryit-host { margin: 8px 0 4px; }
+.tryit-open {
+  display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 10px; border: 0; cursor: pointer; font-weight: 800; font-size: 14px; color: white; font-family: inherit;
+  background: linear-gradient(120deg, #16a34a, #10b981); box-shadow: 0 8px 20px -10px #16a34a; transition: transform .12s, box-shadow .15s;
+}
+.tryit-open:hover { transform: translateY(-1px); box-shadow: 0 12px 24px -10px #16a34a; }
+.tryit-kind { font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: rgb(255 255 255 / .22); }
+.tryit-panel { border: 1.5px solid color-mix(in oklab, #16a34a 55%, var(--border)); border-radius: 16px; overflow: hidden; background: var(--panel); margin: 6px 0; }
+.tryit-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; background: color-mix(in oklab, #16a34a 14%, var(--panel)); border-bottom: 1px solid color-mix(in oklab, #16a34a 35%, var(--border)); }
+.tryit-bar .tryit-kind { color: var(--muted); background: var(--panel-2); font-weight: 600; }
+.tryit-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .tryit-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.tryit-code {
+  width: 100%; min-height: 150px; resize: vertical; border: 0; outline: 0; padding: 14px 16px; background: var(--code-bg); color: var(--code-text);
+  font-family: var(--font-mono), monospace; font-size: 13px; line-height: 1.6; tab-size: 2; white-space: pre; overflow: auto;
+}
+.tryit-result { display: flex; flex-direction: column; min-width: 0; background: var(--panel-2); border-top: 1px solid var(--border); }
+@media (min-width: 900px) { .tryit-result { border-top: 0; border-left: 1px solid var(--border); } }
+.tryit-label { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); padding: 8px 14px 0; }
+.tryit-out { margin: 0; padding: 8px 14px 14px; max-height: 420px; overflow: auto; font-family: var(--font-mono), monospace; font-size: 12.8px; line-height: 1.6; white-space: pre; color: var(--text); }
+.tryit-frame { width: 100%; min-height: 260px; border: 0; background: white; }
+
+.ov-head { margin: 0 0 12px; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }

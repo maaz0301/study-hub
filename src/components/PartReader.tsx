@@ -1,6 +1,9 @@
 'use client';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import type { Section } from '@/lib/types';
+import type { RunKind } from '@/lib/runners';
+import { TryIt } from './TryIt';
 
 type Props = { slug: string; partId: string; sections: Section[]; layout: 'qa' | 'lessons' };
 
@@ -95,16 +98,35 @@ export function Body({ html }: { html: string }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    enhance(el);
+    const roots: Root[] = [];
+    enhance(el, roots);
     // React can re-apply the HTML after this effect (hydration, fast refresh): enhance again when that happens
-    const mo = new MutationObserver(() => enhance(el));
+    const mo = new MutationObserver(() => enhance(el, roots));
     mo.observe(el, { childList: true });
-    return () => mo.disconnect();
+    return () => {
+      mo.disconnect();
+      setTimeout(() => roots.forEach((r) => r.unmount()), 0);
+    };
   }, [html]);
   return <div ref={ref} className="prose-x sec-body sec-pad" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-function enhance(el: HTMLElement) {
+/** Turn every snippet marked data-run into an editable "Try it Yourself" runner. */
+function mountTryIts(el: HTMLElement, roots: Root[]) {
+  el.querySelectorAll<HTMLElement>('pre.code-block[data-run]').forEach((pre) => {
+    if (pre.dataset.tryit) return;
+    pre.dataset.tryit = '1';
+    const host = document.createElement('div');
+    host.className = 'tryit-host';
+    pre.after(host);
+    const root = createRoot(host);
+    root.render(<TryIt kind={pre.dataset.run as RunKind} initial={pre.querySelector('code')?.textContent || ''} />);
+    roots.push(root);
+  });
+}
+
+function enhance(el: HTMLElement, roots: Root[]) {
+  mountTryIts(el, roots);
   {
     // copy buttons
     el.querySelectorAll<HTMLElement>('pre.code-block').forEach((pre) => {

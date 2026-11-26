@@ -390,3 +390,26 @@ export function renderDiagram(name) {
   return f ? f() : '';
 }
 export const DIAGRAM_NAMES = Object.keys(D);
+
+/* ---- diagrams for the W3Schools-style tutorials ---- */
+Object.assign(D, {
+  'react-component-tree': () => flow({ title: 'Props flow down, events flow up', caption: 'state lives in the parent; children get props and call back', perRow: 4, steps: [
+    { i: '🧠', t: 'App (state)', s: 'useState owns the data' }, { i: '⬇️', t: 'Props', s: 'value, onChange' }, { i: '🧩', t: 'Child component', s: 'renders UI from props' }, { i: '🖱️', t: 'User event', s: 'click, type' },
+    { i: '⬆️', t: 'Callback', s: 'child calls onChange' }, { i: '🔄', t: 'setState', s: 'parent updates' }, { i: '🎨', t: 'Re-render', s: 'screen updates' }] }),
+  'closure': () => flow({ title: 'A closure remembers its birthplace', caption: 'the inner function keeps access to count even after makeCounter() has finished', perRow: 4, steps: [
+    { i: '🏭', t: 'makeCounter()', s: 'creates let count = 0' }, { i: '🎁', t: 'returns a function', s: 'the arrow function' }, { i: '🔒', t: 'count is captured', s: 'hidden, private' }, { i: '▶️', t: 'call it again and again', s: '1, 2, 3 …' }] }),
+  'node-server': () => flow({ title: 'A Node.js server', perRow: 5, steps: [
+    { i: '🌐', t: 'Client', s: 'browser, app, curl' }, { i: '🚪', t: 'Port 3000', s: 'server.listen' }, { i: '🧅', t: 'Middleware', s: 'log, json, auth' }, { i: '🎯', t: 'Route handler', s: 'GET /users/:id' }, { i: '🗄️', t: 'Database', s: 'pg / mongodb' }] }),
+  'sql-select-parts': () => flow({ title: 'Anatomy of a SELECT', caption: 'you write it in one order, the database runs it in another', perRow: 4, steps: [
+    { i: '📋', t: 'FROM / JOIN', s: 'pick the tables' }, { i: '🔍', t: 'WHERE', s: 'keep matching rows' }, { i: '🧮', t: 'GROUP BY', s: 'make groups' }, { i: '🎯', t: 'HAVING', s: 'filter groups' }, { i: '👀', t: 'SELECT', s: 'choose columns' }, { i: '↕️', t: 'ORDER BY', s: 'sort' }, { i: '✂️', t: 'LIMIT', s: 'first N rows' }] }),
+  'mongo-query-flow': () => flow({ title: 'A MongoDB query', perRow: 4, steps: [
+    { i: '🔎', t: 'filter', s: '{ city: "Lahore" }' }, { i: '🧾', t: 'projection', s: '{ name: 1 }' }, { i: '↕️', t: 'sort / skip / limit', s: 'order and page' }, { i: '📦', t: 'documents', s: 'JSON back to you' }] }),
+  'async-fastapi': () => compare({ title: 'def vs async def in FastAPI', left: { icon: '🧵', title: 'def', c: '#3b82f6', items: ['Runs in a worker thread', 'Blocking calls are OK', 'time.sleep, requests, sync ORM'] }, right: { icon: '⚡', title: 'async def', c: '#f59e0b', items: ['Runs on the event loop', 'Must use await everywhere', 'httpx.AsyncClient, async drivers', 'One blocking call stalls ALL requests'] } }),
+});
+RULES['react-node'].push(
+  [/^3\. Functions/, 'event-loop'], [/^6\. Scope/, 'closure'], [/^7\. Promises/, 'promise'], [/^8\. The event loop/, 'event-loop'],
+  [/^12\. State/, 'react-render'], [/^17\. Sharing state/, 'react-component-tree'], [/^21\. Your first HTTP/, 'node-server'], [/^22\. Express/, 'express-middleware'],
+);
+RULES.postgres.push([/^6\. Aggregates/, 'sql-select-parts'], [/^7\. GROUP BY/, 'sql-order'], [/^8\. INNER JOIN/, 'joins'], [/^13\. Indexes/, 'btree']);
+RULES.mongodb.push([/^1\. What is MongoDB/, 'doc-vs-table'], [/^2\. Filter/, 'mongo-query-flow'], [/^11\. Aggregation/, 'mongo-agg'], [/^14\. Schema design/, 'embed-vs-ref']);
+RULES['ai-fastapi-flask'].push([/^1\. Install FastAPI/, 'fastapi-flow'], [/^5\. async def/, 'async-fastapi'], [/^8\. Authentication/, 'jwt']);

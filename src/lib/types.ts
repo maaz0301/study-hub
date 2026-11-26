@@ -41,7 +41,7 @@ export type Topic = TopicMeta & {
 export type Visual = { name: string; part: string; partTitle: string; section: string; sectionTitle: string; svg: string };
 
 export type TopicSummary = TopicMeta & {
-  partList: { id: string; title: string; count: number; blurb: string }[];
+  partList: { id: string; title: string; count: number; blurb: string; lesson?: boolean; questions?: number }[];
   hasQuiz: boolean;
   visualCount?: number;
   lessonCount?: number;

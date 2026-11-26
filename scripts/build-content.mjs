@@ -74,7 +74,7 @@ function polish(html, { langHint } = {}) {
     if ($p.hasClass('out')) lang = 'plaintext';
     const h = highlight(raw, lang);
     const extra = $p.hasClass('out') ? ' out' : '';
-    $p.replaceWith(`<pre class="code-block${extra}" data-lang="${$p.hasClass('out') ? 'output' : h.lang}"><code class="hljs">${h.html}</code></pre>`);
+    $p.replaceWith(`<pre class="code-block${extra}" data-lang="${$p.hasClass('out') ? 'output' : h.lang}"${$p.attr('data-run') ? ` data-run="${$p.attr('data-run')}"` : ''}><code class="hljs">${h.html}</code></pre>`);
   });
   $('img').each((_, i) => { $(i).attr('loading', 'lazy'); });
   $('a[href]').each((_, a) => {
@@ -346,6 +346,24 @@ async function fromMarkdown(file, meta) {
   return finishTopic(meta, parts, extras);
 }
 
+/** content/lessons/<slug>.lessons.mjs: tutorial lessons for any topic (also the ones converted from Word/HTML). */
+async function appendLessons(topic) {
+  const file = path.join(ROOT, 'content', 'lessons', `${topic.slug}.lessons.mjs`);
+  if (!fs.existsSync(file)) return;
+  const { lessons, groups } = await import(pathToFileURL(file).href);
+  const sorted = [...lessons].sort((a, b) => a.n - b.n);
+  const parts = groups.map((g) => {
+    const list = sorted.filter((l) => l.n >= g.from && l.n <= g.to);
+    if (!list.length) return null;
+    return {
+      id: g.id, title: g.title, blurb: list.map((l) => l.title).slice(0, 4).join(', ') + '…',
+      sections: list.map((l) => ({ id: `lesson-${l.n}`, title: `${l.n}. ${l.title}`, group: null, isQuestion: false, lesson: true, summary: l.sub, html: polish(lessonHtml(l), {}) })),
+    };
+  }).filter(Boolean);
+  topic.parts.splice(1, 0, ...parts);
+  topic.stats = { ...topic.stats, parts: topic.parts.length, sections: topic.parts.reduce((n, p) => n + p.sections.length, 0) };
+}
+
 /** content/extra/<slug>.md: more interview questions for any topic, appended as extra parts (also feed search and the quiz). */
 function appendExtra(topic) {
   const file = path.join(ROOT, 'content', 'extra', `${topic.slug}.md`);
@@ -392,14 +410,16 @@ function renumberLessons(list) {
 function lessonHtml(l) {
   const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
   const lang = l.lang || 'javascript';
-  const steps = l.steps.map(([code, text, stepLang]) => `<li><pre class="language-${stepLang || lang}">${esc(code)}</pre><p>${inline(text)}</p></li>`).join('');
+  const steps = l.steps.map(([code, text, stepLang, runKind]) => `<li><pre class="language-${stepLang || lang}"${runKind ? ` data-run="${runKind}"` : ''}>${esc(code)}</pre><p>${inline(text)}</p></li>`).join('');
+  const mistakes = `<div class="box warn"><h3>⚠️ Common mistakes</h3><ul>${l.mistakes.map((m) => `<li>${inline(m)}</li>`).join('')}</ul></div>`;
   return `<p class="sub">${inline(l.sub)}</p>`
     + `<div class="box big"><h3>💡 The big idea</h3><p>${inline(l.big)}</p></div>`
     + `<h3>🪜 Step by step through the code</h3><ol class="steps">${steps}</ol>`
-    + `<div class="two"><div><h3>🖥️ Output</h3><details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary><pre class="out">${esc(l.output)}</pre></details></div>`
-    + `<div class="box warn"><h3>⚠️ Common mistakes</h3><ul>${l.mistakes.map((m) => `<li>${inline(m)}</li>`).join('')}</ul></div></div>`
-    + `<details><summary>Show the full ${esc(l.fileLabel || 'program')} (${esc(l.file)})</summary><pre class="language-${lang}">${esc(l.program)}</pre></details>`
-    + `<p class="run"><span class="run-label">▶ Run it</span><code>${esc(l.run).replace(/\n/g, '<br>')}</code></p>`;
+    + (l.output
+      ? `<div class="two"><div><h3>🖥️ Output</h3><details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary><pre class="out">${esc(l.output)}</pre></details></div>${mistakes}</div>`
+      : mistakes)
+    + (l.program ? `<details><summary>Show the full ${esc(l.fileLabel || 'program')} (${esc(l.file)})</summary><pre class="language-${lang}">${esc(l.program)}</pre></details>` : '')
+    + (l.run ? `<p class="run"><span class="run-label">▶ Run it</span><code>${esc(l.run).replace(/\n/g, '<br>')}</code></p>` : '');
 }
 
 function fromCsharp(file, meta) {
@@ -647,6 +667,7 @@ async function main() {
       }
       topic.stats = { ...topic.stats, parts: topic.parts.length, sections: topic.parts.reduce((n, p) => n + p.sections.length, 0), questions: topic.parts.reduce((n, p) => n + p.sections.filter((x) => x.isQuestion).length, 0), cards: topic.cards.length };
     }
+    await appendLessons(topic);
     appendExtra(topic);
     built[topic.slug] = topic;
     if (/\.html?$/i.test(base)) {
@@ -656,7 +677,7 @@ async function main() {
     delete topic.langHint;
     fs.writeFileSync(path.join(OUT, 'topics', `${topic.slug}.json`), JSON.stringify(topic));
     const { parts, cards, extras, ...rest } = topic;
-    index.push({ ...rest, partList: parts.map((p) => ({ id: p.id, title: p.title, count: p.sections.length, blurb: p.blurb || p.sections.slice(0, 3).map((s) => cleanQ(s.title)).join(' · ') })), hasQuiz: !!extras.quiz, visualCount: (extras.visuals || []).length, lessonCount: parts.reduce((n, p) => n + p.sections.filter((s) => s.lesson).length, 0) });
+    index.push({ ...rest, partList: parts.map((p) => ({ id: p.id, title: p.title, lesson: p.sections.some((x) => x.lesson), questions: p.sections.filter((x) => x.isQuestion).length, count: p.sections.length, blurb: p.blurb || p.sections.slice(0, 3).map((s) => cleanQ(s.title)).join(' · ') })), hasQuiz: !!extras.quiz, visualCount: (extras.visuals || []).length, lessonCount: parts.reduce((n, p) => n + p.sections.filter((s) => s.lesson).length, 0) });
     for (const p of parts) for (const s of p.sections) {
       // full-text: the unique words of the section body, so search finds terms beyond the title
       const words = [...new Set(textOf(s.html).toLowerCase().match(/[a-z0-9#+.$_-]{3,}/g) || [])].join(' ').slice(0, 2500);

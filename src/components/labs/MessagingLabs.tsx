@@ -25,7 +25,7 @@ const q = (s: string) => `"${s}"`;
 const arr = (a: string[]) => (a.length ? a.map((x, i) => `${i + 1}) ${q(x)}`).join('\n') : '(empty array)');
 const WRONG = '(error) WRONGTYPE Operation against a key holding the wrong kind of value';
 
-class MiniRedis {
+export class MiniRedis {
   db = new Map<string, Val>();
   exp = new Map<string, number>();
   now = 0;
