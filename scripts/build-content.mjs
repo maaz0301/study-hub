@@ -360,7 +360,9 @@ async function appendLessons(topic) {
       sections: list.map((l) => ({ id: `lesson-${l.n}`, title: `${l.n}. ${l.title}`, group: null, isQuestion: false, lesson: true, summary: l.sub, html: polish(lessonHtml(l), {}) })),
     };
   }).filter(Boolean);
-  topic.parts.splice(1, 0, ...parts);
+  // after any lesson parts the topic already has, otherwise right after the first part
+  const lastLesson = topic.parts.reduce((k, p, i) => (p.sections.some((s) => s.lesson) ? i : k), 0);
+  topic.parts.splice(lastLesson + 1, 0, ...parts);
   topic.stats = { ...topic.stats, parts: topic.parts.length, sections: topic.parts.reduce((n, p) => n + p.sections.length, 0) };
 }
 
