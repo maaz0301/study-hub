@@ -90,7 +90,7 @@ const SectionCard = memo(function SectionCard({ s, open, flash, onToggle }: { s:
   );
 });
 
-function Body({ html }: { html: string }) {
+export function Body({ html }: { html: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;

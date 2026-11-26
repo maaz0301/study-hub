@@ -317,33 +317,58 @@ async function fromMarkdown(file, meta) {
 
   // optional <slug>.lessons.mjs: numbered tutorial lessons in the same layout as the C# lessons,
   // inserted right after the first ("Start here") part
-  const lessonFile = file.replace(/\.md$/, '.lessons.mjs');
+  // front matter may point at a shared lessons file and pick one technology: lessonsFile + lessonTopic
+  const lessonFile = meta.lessonsFile ? path.join(path.dirname(file), meta.lessonsFile) : file.replace(/\.md$/, '.lessons.mjs');
   if (fs.existsSync(lessonFile)) {
-    const { lessons, groups } = await import(pathToFileURL(lessonFile).href);
-    const lessonParts = groups.map((g) => ({
-      id: g.id,
-      title: g.title,
-      blurb: lessons.filter((l) => l.n >= g.from && l.n <= g.to).map((l) => l.title).slice(0, 4).join(', ') + '…',
-      sections: lessons.filter((l) => l.n >= g.from && l.n <= g.to).map((l) => ({
-        id: `lesson-${l.n}`, title: `${l.n}. ${l.title}`, group: null, isQuestion: false, lesson: true, summary: l.sub, html: lessonHtml(l),
-      })),
-    }));
+    const mod = await import(pathToFileURL(lessonFile).href);
+    let lessons = mod.lessons, groups = mod.groups, renumbered = false;
+    if (meta.lessonTopic) {
+      lessons = lessons.filter((l) => l.topic === meta.lessonTopic).sort((a, b) => a.n - b.n);
+      groups = mod.groupsByTopic[meta.lessonTopic];
+      renumbered = true;
+    }
+    const final = renumbered ? renumberLessons(lessons) : lessons;       // same order as `lessons`
+    const lessonParts = groups.map((g) => {
+      const idx = lessons.map((l, i) => (l.n >= g.from && l.n <= g.to ? i : -1)).filter((i) => i >= 0);
+      const list = idx.map((i) => final[i]);
+      if (!list.length) return null;
+      const range = list.length > 1 ? `${list[0].n}–${list[list.length - 1].n}` : `${list[0].n}`;
+      return {
+        id: g.id,
+        title: renumbered ? `${g.title} (lesson${list.length > 1 ? 's' : ''} ${range})` : g.title,
+        blurb: list.map((l) => l.title).slice(0, 4).join(', ') + '…',
+        sections: list.map((l) => ({ id: `lesson-${l.n}`, title: `${l.n}. ${l.title}`, group: null, isQuestion: false, lesson: true, summary: l.sub, html: lessonHtml(l) })),
+      };
+    }).filter(Boolean);
     parts.splice(1, 0, ...lessonParts);
-    extras.extraCards = lessons.map((l) => ({ id: `lesson-${l.n}`, q: `Lesson ${l.n}: ${l.title}`, a: clip(`${l.sub} ${l.big}`, 420), part: 'Lessons' }));
+    extras.extraCards = final.map((l) => ({ id: `lesson-${l.n}`, q: `Lesson ${l.n}: ${l.title}`, a: clip(`${l.sub} ${l.big}`, 420), part: 'Lessons' }));
   }
   return finishTopic(meta, parts, extras);
+}
+
+/** Number a topic's lessons 1..n and fix "lesson N" / "NN-name.mjs" references inside their text. */
+function renumberLessons(list) {
+  const map = new Map(list.map((l, i) => [l.n, i + 1]));
+  const fix = (s) => (typeof s !== 'string' ? s : s
+    .replace(/\b([Ll]essons? )(\d+)\b/g, (m, p, d) => (map.has(+d) ? p + map.get(+d) : m))
+    .replace(/\b(\d{2})-([a-z0-9-]+\.mjs)\b/g, (m, d, rest) => (map.has(+d) ? String(map.get(+d)).padStart(2, '0') + '-' + rest : m)));
+  return list.map((l) => ({
+    ...l, n: map.get(l.n), title: fix(l.title), sub: fix(l.sub), big: fix(l.big), output: fix(l.output), file: fix(l.file),
+    program: fix(l.program), run: fix(l.run), steps: l.steps.map((st) => st.map(fix)), mistakes: l.mistakes.map(fix),
+  }));
 }
 
 /** Same markup as a C# lesson: big idea, numbered steps with a snippet each, output to predict, common mistakes, full program. */
 function lessonHtml(l) {
   const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
-  const steps = l.steps.map(([code, text]) => `<li><pre class="language-javascript">${esc(code)}</pre><p>${inline(text)}</p></li>`).join('');
+  const lang = l.lang || 'javascript';
+  const steps = l.steps.map(([code, text, stepLang]) => `<li><pre class="language-${stepLang || lang}">${esc(code)}</pre><p>${inline(text)}</p></li>`).join('');
   return `<p class="sub">${inline(l.sub)}</p>`
     + `<div class="box big"><h3>💡 The big idea</h3><p>${inline(l.big)}</p></div>`
     + `<h3>🪜 Step by step through the code</h3><ol class="steps">${steps}</ol>`
     + `<div class="two"><div><h3>🖥️ Output</h3><details class="reveal"><summary>🤔 Predict the output first, then click to reveal</summary><pre class="out">${esc(l.output)}</pre></details></div>`
     + `<div class="box warn"><h3>⚠️ Common mistakes</h3><ul>${l.mistakes.map((m) => `<li>${inline(m)}</li>`).join('')}</ul></div></div>`
-    + `<details><summary>Show the full program (${esc(l.file)})</summary><pre class="language-javascript">${esc(l.program)}</pre></details>`
+    + `<details><summary>Show the full ${esc(l.fileLabel || 'program')} (${esc(l.file)})</summary><pre class="language-${lang}">${esc(l.program)}</pre></details>`
     + `<p class="run"><span class="run-label">▶ Run it</span><code>${esc(l.run).replace(/\n/g, '<br>')}</code></p>`;
 }
 
@@ -600,7 +625,7 @@ async function main() {
     delete topic.langHint;
     fs.writeFileSync(path.join(OUT, 'topics', `${topic.slug}.json`), JSON.stringify(topic));
     const { parts, cards, extras, ...rest } = topic;
-    index.push({ ...rest, partList: parts.map((p) => ({ id: p.id, title: p.title, count: p.sections.length, blurb: p.blurb || p.sections.slice(0, 3).map((s) => cleanQ(s.title)).join(' · ') })), hasQuiz: !!extras.quiz, visualCount: (extras.visuals || []).length });
+    index.push({ ...rest, partList: parts.map((p) => ({ id: p.id, title: p.title, count: p.sections.length, blurb: p.blurb || p.sections.slice(0, 3).map((s) => cleanQ(s.title)).join(' · ') })), hasQuiz: !!extras.quiz, visualCount: (extras.visuals || []).length, lessonCount: parts.reduce((n, p) => n + p.sections.filter((s) => s.lesson).length, 0) });
     for (const p of parts) for (const s of p.sections) {
       // full-text: the unique words of the section body, so search finds terms beyond the title
       const words = [...new Set(textOf(s.html).toLowerCase().match(/[a-z0-9#+.$_-]{3,}/g) || [])].join(' ').slice(0, 2500);

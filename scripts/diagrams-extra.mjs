@@ -52,11 +52,17 @@ export function extraDiagrams({ flow, cycle, hub, compare }) {
 
 export const EXTRA_RULES = {
   messaging: [
-    [/what is a message broker/i, 'broker-shapes'], [/which one should I use/i, 'which-broker'], [/delivery guarantees/i, 'delivery'],
-    [/redis Pub\/Sub work/i, 'redis-pubsub'], [/reliable job queue/i, 'redis-queue'], [/redis Streams and consumer groups/i, 'redis-streams'],
-    [/What is MQTT and why/i, 'mqtt-pipeline'], [/topics and wildcards/i, 'mqtt-wildcards'], [/QoS levels/i, 'mqtt-qos1'], [/QoS levels/i, 'mqtt-qos2'],
-    [/What is Apache Kafka/i, 'kafka-arch'], [/topics, partitions and offsets/i, 'kafka-partitions'], [/consumers and consumer groups/i, 'kafka-groups'], [/replicate data/i, 'kafka-replication'],
+    [/what is a message broker/i, 'broker-shapes'], [/which one should I use/i, 'which-broker'], [/delivery guarantees/i, 'delivery'], [/^1. Capstone/, 'iot-pipeline'],
     [/Outbox pattern/i, 'outbox'], [/dead-letter queue/i, 'dlq'], [/IoT telemetry pipeline/i, 'iot-pipeline'],
+  ],
+  redis: [
+    [/How does Redis Pub\/Sub work/i, 'redis-pubsub'], [/reliable job queue/i, 'redis-queue'], [/Redis Streams and consumer groups/i, 'redis-streams'], [/Which Redis messaging tool/i, 'which-broker'],
+  ],
+  mqtt: [
+    [/What is MQTT in plain words/i, 'mqtt-pipeline'], [/topics and wildcards/i, 'mqtt-wildcards'], [/QoS levels/i, 'mqtt-qos1'], [/QoS levels/i, 'mqtt-qos2'],
+  ],
+  kafka: [
+    [/What is Kafka in plain words/i, 'kafka-arch'], [/topics, partitions and offsets/i, 'kafka-partitions'], [/consumers and consumer groups/i, 'kafka-groups'], [/replicate data/i, 'kafka-replication'],
   ],
   'leetcode-js': [
     [/^76\./, 'sliding-window'], [/^567\./, 'sliding-window'], [/^424\./, 'sliding-window'], [/^42\./, 'two-pointers'], [/^33\./, 'binary-search'], [/^153\./, 'binary-search'],

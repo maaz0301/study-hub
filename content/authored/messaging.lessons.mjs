@@ -3,6 +3,8 @@
 
 const L = (n, title, sub, big, steps, output, mistakes, file, program, run) => ({ n, title, sub, big, steps, output, mistakes, file, program, run });
 
+const T = (topic, lesson, t2) => ({ ...lesson, topic: t2 ?? topic });
+
 export const groups = [
   { id: 'lab-1-setup-and-redis', title: 'Lab 1: Setup and Redis (lessons 1–11)', from: 1, to: 11 },
   { id: 'lab-2-mqtt', title: 'Lab 2: MQTT step by step (lessons 12–18)', from: 12, to: 18 },
@@ -11,40 +13,62 @@ export const groups = [
 ];
 
 export const lessons = [
-  // ------------------------------------------------------------------ 1
-  L(1, 'Set up your lab', 'Start Redis, an MQTT broker and Kafka with Docker, then create a Node.js project.',
-    'To try messaging for real you need a broker running on your computer. Docker makes that easy: one command starts each one, and you can delete it afterwards. Every lesson below uses the same three brokers and one Node.js project, so do this once.',
+  // ---------------- per-technology setup lessons (n = 0 sorts first in each topic)
+  T('redis', L(0, 'Set up Redis and your project', 'Start Redis with Docker and connect from Node.js.',
+    'Redis runs as a small server. The quickest way to get one is Docker: a single command starts it and you can delete it afterwards. Then you create a Node.js project with the `ioredis` library, which is how every lesson here talks to Redis.',
     [
-      ['docker run -d --name redis -p 6379:6379 redis:7', 'Starts **Redis** and makes it available on `localhost:6379`. `-d` runs it in the background, `--name` gives it a name you can stop later.'],
-      ['docker run -d --name emqx -p 1883:1883 -p 18083:18083 emqx/emqx', 'Starts an **MQTT broker** (EMQX). Port `1883` is MQTT, `18083` is a web dashboard at http://localhost:18083. No Docker? You can use the free public broker `mqtt://broker.hivemq.com` instead (never send secrets to it).'],
-      ['docker run -d --name kafka -p 9092:9092 apache/kafka:latest', 'Starts a single-node **Kafka** (it uses KRaft, so no ZooKeeper is needed). Your code connects to `localhost:9092`.'],
-      ['mkdir messaging-lab\ncd messaging-lab\nnpm init -y\nnpm pkg set type=module\nnpm install ioredis mqtt kafkajs', 'Creates a project and installs three libraries: `ioredis` (Redis), `mqtt` (MQTT) and `kafkajs` (Kafka). `type=module` lets you use `import` in `.mjs` and `.js` files.'],
-      ['docker ps', 'Lists running containers. You should see all three.'],
+      ['docker run -d --name redis -p 6379:6379 redis:7', 'Starts **Redis** on `localhost:6379`. `-d` runs it in the background, `--name` lets you stop it later.', 'bash'],
+      ['docker exec -it redis redis-cli ping', 'Runs the built-in command-line client inside the container. A healthy server answers `PONG`.', 'bash'],
+      ['mkdir redis-lab\ncd redis-lab\nnpm init -y\nnpm pkg set type=module\nnpm install ioredis', 'Creates a project. `type=module` lets you use `import`. `ioredis` is the Redis client for Node.js.', 'bash'],
+      ['docker rm -f redis', 'When you are completely done, this stops and deletes the container.', 'bash'],
     ],
-    'CONTAINER ID   IMAGE              STATUS         PORTS\n3f1c…          apache/kafka       Up 5 seconds   0.0.0.0:9092->9092/tcp\n9b2e…          emqx/emqx          Up 8 seconds   0.0.0.0:1883->1883/tcp, 0.0.0.0:18083->18083/tcp\n7a4d…          redis:7            Up 11 seconds  0.0.0.0:6379->6379/tcp',
-    ['Forgetting `npm pkg set type=module`: Node says `Cannot use import statement outside a module`.', 'A port is already in use (for example another Redis). Stop it or change the left number: `-p 6380:6379`.', 'Kafka needs a few seconds to start. If a Kafka lesson says `connection error`, wait 10 seconds and retry.', 'Run `docker rm -f redis emqx kafka` when you are completely done.'],
+    'PONG\n\nadded 8 packages in 2s',
+    ['Forgetting `npm pkg set type=module`: Node says `Cannot use import statement outside a module`.', 'Port 6379 already in use (another Redis): stop it or change the left number: `-p 6380:6379`.', 'Docker not running: start Docker Desktop first.'],
     'check.mjs',
     `import Redis from 'ioredis';
-import mqtt from 'mqtt';
-import { Kafka, logLevel } from 'kafkajs';
 
-// 1. Redis
 const redis = new Redis();
 console.log('Redis:', await redis.ping());
-await redis.quit();
+await redis.quit();`,
+    'node check.mjs', 'javascript'), 'redis'),
 
-// 2. MQTT
+  T('mqtt', L(0, 'Set up an MQTT broker and your project', 'Start an MQTT broker with Docker and connect from Node.js.',
+    'MQTT needs a **broker**: the server that receives published messages and forwards them to subscribers. EMQX is a popular free broker and starts with one Docker command. You then install the `mqtt` library (MQTT.js).',
+    [
+      ['docker run -d --name emqx -p 1883:1883 -p 18083:18083 emqx/emqx', 'Starts the broker. Port `1883` is MQTT; `18083` is a web dashboard at http://localhost:18083 where you can watch clients and topics.', 'bash'],
+      ['mkdir mqtt-lab\ncd mqtt-lab\nnpm init -y\nnpm pkg set type=module\nnpm install mqtt', 'Creates a project with the MQTT client library.', 'bash'],
+      ['mqtt://broker.hivemq.com', 'No Docker? Use this free public test broker instead (never send secrets to it, and use unique topic names).', 'plaintext'],
+      ['docker rm -f emqx', 'Cleans up when you are done.', 'bash'],
+    ],
+    'emqx\n\nadded 17 packages in 3s',
+    ['Using a public broker with generic topics like `test`: other people see (and send) your messages.', 'The dashboard default login is documented by EMQX: change it if the broker is reachable by anyone else.', 'Port 1883 in use: another broker (such as Mosquitto) is running.'],
+    'check.mjs',
+    `import mqtt from 'mqtt';
+
 const client = await mqtt.connectAsync('mqtt://localhost:1883');
 console.log('MQTT: connected');
-await client.endAsync();
+await client.endAsync();`,
+    'node check.mjs', 'javascript'), 'mqtt'),
 
-// 3. Kafka
+  T('kafka', L(0, 'Set up Kafka and your project', 'Start a single-node Kafka with Docker and connect from Node.js.',
+    'Kafka is a cluster of **brokers**. For learning, one broker is enough: the official Docker image runs Kafka in KRaft mode (no ZooKeeper needed) and listens on `localhost:9092`. You then install `kafkajs`, a pure-JavaScript client.',
+    [
+      ['docker run -d --name kafka -p 9092:9092 apache/kafka:latest', 'Starts a single-node Kafka. Give it 10 seconds to boot.', 'bash'],
+      ['docker exec kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092', 'Lists topics using Kafka\'s own command-line tool. An empty answer means the broker is up and has no topics yet.', 'bash'],
+      ['mkdir kafka-lab\ncd kafka-lab\nnpm init -y\nnpm pkg set type=module\nnpm install kafkajs', 'Creates a project with the Kafka client library.', 'bash'],
+      ['docker rm -f kafka', 'Cleans up when you are done.', 'bash'],
+    ],
+    '(no topics yet)\n\nadded 3 packages in 2s',
+    ['Connecting immediately after `docker run`: Kafka needs several seconds to start. Wait and retry.', 'Running your code **inside** another container: `localhost:9092` then points at that container. Use the broker\'s network name and advertised listeners.', 'Port 9092 already in use by another Kafka.'],
+    'check.mjs',
+    `import { Kafka, logLevel } from 'kafkajs';
+
 const kafka = new Kafka({ clientId: 'check', brokers: ['localhost:9092'], logLevel: logLevel.ERROR });
 const admin = kafka.admin();
 await admin.connect();
 console.log('Kafka topics:', await admin.listTopics());
 await admin.disconnect();`,
-    'node check.mjs'),
+    'node check.mjs', 'javascript'), 'kafka'),
 
   // ------------------------------------------------------------------ 2
   L(2, 'Redis: connect, SET and GET', 'Talk to Redis from Node.js and store a value.',
@@ -852,7 +876,7 @@ await consumer.run({
       ['(averages.mjs)  consumer.run({ eachMessage: … })', 'A Kafka consumer keeps a running average per device and prints it: this is where real systems would write to a database or raise alerts.'],
     ],
     '$ node 27-bridge.mjs\nbridge ready: MQTT sensors/+/temperature → Kafka telemetry\nforwarded dev-1 21.4°C\nforwarded dev-2 19.8°C\n\n$ node 27-averages.mjs\ndev-1 average 21.4°C (1 readings)\ndev-2 average 19.8°C (1 readings)\ndev-1 average 21.9°C (2 readings)',
-    ['Forgetting to create the `telemetry` topic (lesson 19): with auto-create off the producer fails.', 'Using no key: readings of one device spread over partitions and arrive out of order.', 'Losing messages on restart: the bridge uses QoS 1 on the MQTT side and acks=-1 on the Kafka side, so the chain is at-least-once. Duplicates are possible, so the consumer should be idempotent.'],
+    ['Forgetting to create the `telemetry` topic (see the Kafka tutorial): with auto-create off the producer fails.', 'Using no key: readings of one device spread over partitions and arrive out of order.', 'Losing messages on restart: the bridge uses QoS 1 on the MQTT side and acks=-1 on the Kafka side, so the chain is at-least-once. Duplicates are possible, so the consumer should be idempotent.'],
     '27-bridge.mjs',
     `// Run these three programs in three terminals:
 //   node 27-bridge.mjs     (this file)
@@ -893,3 +917,25 @@ await client.subscribeAsync('sensors/+/temperature', { qos: 1 });
 console.log('bridge ready: MQTT sensors/+/temperature → Kafka telemetry');`,
     'node 27-bridge.mjs'),
 ];
+
+// assign topics by original number (the setup lessons already have one)
+const topicOf = (n) => (n <= 11 ? 'redis' : n <= 18 ? 'mqtt' : n <= 26 ? 'kafka' : 'capstone');
+for (const l of lessons) if (!l.topic) l.topic = topicOf(l.n);
+
+// tutorial sections per technology (ranges use the original lesson numbers, 0 = setup)
+export const groupsByTopic = {
+  redis: [
+    { id: 'part-1-basics-and-pubsub', title: 'Part 1: Basics and Pub/Sub', from: 0, to: 6 },
+    { id: 'part-2-queues', title: 'Part 2: Job queues with lists', from: 7, to: 8 },
+    { id: 'part-3-streams', title: 'Part 3: Streams and consumer groups', from: 9, to: 11 },
+  ],
+  mqtt: [
+    { id: 'part-1-publish-subscribe-topics', title: 'Part 1: Publish, subscribe and topics', from: 0, to: 14 },
+    { id: 'part-2-reliability', title: 'Part 2: QoS, retained messages, Last Will and sessions', from: 15, to: 18 },
+  ],
+  kafka: [
+    { id: 'part-1-topics-produce-consume', title: 'Part 1: Topics, producing and consuming', from: 0, to: 22 },
+    { id: 'part-2-groups-and-reliability', title: 'Part 2: Groups, commits and reliability', from: 23, to: 26 },
+  ],
+  capstone: [{ id: 'capstone-pipeline', title: 'Capstone pipeline', from: 27, to: 27 }],
+};

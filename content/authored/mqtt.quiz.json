@@ -1,0 +1,68 @@
+[
+ {
+  "q": "What does the MQTT wildcard + match?",
+  "options": [
+   "Everything below a level",
+   "Exactly one topic level",
+   "Any number of characters",
+   "Only the last level"
+  ],
+  "answer": 1,
+  "explain": "+ is single-level; # matches all remaining levels and must be last."
+ },
+ {
+  "q": "Which MQTT QoS gives exactly-once delivery?",
+  "options": [
+   "0",
+   "1",
+   "2",
+   "None, MQTT cannot"
+  ],
+  "answer": 2,
+  "explain": "QoS 2 uses PUBLISH, PUBREC, PUBREL, PUBCOMP so the receiver delivers the message once."
+ },
+ {
+  "q": "Why can MQTT QoS 1 deliver a message twice?",
+  "options": [
+   "The broker is buggy",
+   "The PUBACK is lost, so the sender resends the PUBLISH",
+   "Retained messages are enabled",
+   "Wildcards overlap"
+  ],
+  "answer": 1,
+  "explain": "At-least-once: a lost ack causes a resend (DUP flag), so handlers must be idempotent."
+ },
+ {
+  "q": "What is an MQTT retained message for?",
+  "options": [
+   "Encrypting payloads",
+   "Giving new subscribers the last known value immediately",
+   "Guaranteeing order",
+   "Compressing data"
+  ],
+  "answer": 1,
+  "explain": "The broker keeps the last message of a topic and sends it to every new subscriber."
+ },
+ {
+  "q": "When is the MQTT Last Will message published?",
+  "options": [
+   "On every publish",
+   "When a client disconnects ungracefully",
+   "When QoS is 2",
+   "Every keep-alive"
+  ],
+  "answer": 1,
+  "explain": "The broker publishes the will if the client dies without a clean DISCONNECT, which is how you detect 'offline'."
+ },
+ {
+  "q": "Best fit for millions of battery-powered sensors on mobile networks?",
+  "options": [
+   "Kafka directly",
+   "MQTT",
+   "HTTP polling",
+   "Redis lists"
+  ],
+  "answer": 1,
+  "explain": "MQTT has tiny headers, one long-lived connection, QoS levels and last will."
+ }
+]

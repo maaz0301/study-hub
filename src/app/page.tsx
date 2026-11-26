@@ -5,11 +5,13 @@ import { RandomQuestion } from '@/components/RandomQuestion';
 import { CountUp, RotatingWord, Typer } from '@/components/HomeFx';
 
 const TRY_IT = [
-  { slug: 'messaging', href: '/topics/messaging/lab', emoji: '📨', title: 'Redis console', blurb: 'Type real Redis commands: lists, streams, consumer groups.', cmd: 'XADD orders * userId 7 total 59', color: '#f43f5e' },
+  { slug: 'redis', href: '/topics/redis/lab', emoji: '🔴', title: 'Redis console', blurb: 'Type real Redis commands: lists, streams, consumer groups.', cmd: 'XADD orders * userId 7 total 59', color: '#f43f5e' },
   { slug: 'postgres', href: '/topics/postgres/lab', emoji: '🐘', title: 'Real PostgreSQL', blurb: 'A full Postgres running inside your browser tab.', cmd: 'SELECT city, SUM(total) FROM orders GROUP BY 1', color: '#3b82f6' },
   { slug: 'leetcode', href: '/topics/leetcode/lab', emoji: '🧩', title: 'Algorithm visualizer', blurb: 'Type your own input and watch the pointers move.', cmd: 'L→ 1 3 4 6 8 11 ←R   sum = 10 ✓', color: '#eab308' },
   { slug: 'agentic-langchain', href: '/topics/agentic-langchain/lab', emoji: '🤖', title: 'LangGraph agent run', blurb: 'Step through an agent: tools, failures, human approval.', cmd: 'agent → create_refund → ⏸ approve?', color: '#f97316' },
   { slug: 'dotnet', href: '/topics/dotnet/lab', emoji: '🔷', title: 'Middleware pipeline', blurb: 'Reorder ASP.NET middleware and send a request.', cmd: 'UseAuthentication → UseAuthorization → 200 OK', color: '#6366f1' },
+  { slug: 'cicd', href: '/topics/cicd/lab', emoji: '🚀', title: 'CI/CD pipeline simulator', blurb: 'Break a test and see which stages are skipped.', cmd: 'push → lint ✓ test ✗ → build skipped', color: '#0ea5e9' },
+  { slug: 'n8n', href: '/topics/n8n/lab', emoji: '⚙️', title: 'n8n workflow runner', blurb: 'Step through a workflow and see every node\'s JSON.', cmd: 'Webhook → IF budget > 1000 → Slack', color: '#ea4b71' },
   { slug: 'mongodb', href: '/topics/mongodb/lab', emoji: '🍃', title: 'MongoDB playground', blurb: 'Run aggregation pipelines on sample data.', cmd: 'db.orders.aggregate([{ $match: … }])', color: '#22c55e' },
 ];
 const FLOATERS = [['🧠', 56, 2, 0], ['📨', 93, 3, 1.2], ['🐘', 97, 50, 2.1], ['🍃', 57, 90, 0.6], ['⚛️', 86, 92, 1.8], ['🔷', 74, 1, 2.7], ['🤖', 47, 94, 3.2], ['🎙️', 98, 80, 0.3]] as const;
@@ -19,7 +21,12 @@ const PATH = [
   { slug: 'leetcode', why: 'Practice coding problems in C# and JavaScript.' },
   { slug: 'dotnet', why: 'Build web APIs: DI, middleware, EF Core, async.' },
   { slug: 'postgres', why: 'Relational data: SQL, joins, indexes, transactions.' },
-  { slug: 'messaging', why: 'Redis, MQTT and Kafka: queues, pub/sub and streams.' },
+  { slug: 'redis', why: 'Pub/Sub, queues and Streams with Node.js.' },
+  { slug: 'mqtt', why: 'The IoT messaging protocol: topics, QoS, sessions.' },
+  { slug: 'kafka', why: 'Event streaming: partitions and consumer groups.' },
+  { slug: 'messaging', why: 'Compare them and learn the patterns.' },
+  { slug: 'cicd', why: 'Automate build, test and release with GitHub Actions.' },
+  { slug: 'n8n', why: 'Automate work between apps with workflows.' },
   { slug: 'leetcode-js', why: 'More coding problems, all in JavaScript.' },
   { slug: 'mongodb', why: 'Document data: CRUD, aggregation, schema design.' },
   { slug: 'react-node', why: 'Full-stack JS: HTTP, React, Node, Express.' },
@@ -62,12 +69,12 @@ export default function Home() {
             Interview prep you can <RotatingWord words={['play with', 'run live', 'see in motion', 'actually master']} />
           </h1>
           <p className="muted" style={{ fontSize: 18, lineHeight: 1.6, maxWidth: 620, margin: 0 }}>
-            Your notes on GenAI, RAG, agents & LangChain, Voice AI, Redis/MQTT/Kafka, FastAPI, React, Node, C#, .NET, MongoDB and PostgreSQL, turned into one place to read, watch as animated diagrams, test yourself with quizzes, and run as real code in your browser.
+            Your notes on GenAI, RAG, agents & LangChain, Voice AI, Redis/MQTT/Kafka, n8n, CI/CD, FastAPI, React, Node, C#, .NET, MongoDB and PostgreSQL, turned into one place to read, watch as animated diagrams, test yourself with quizzes, and run as real code in your browser.
           </p>
           <div style={{ display: 'flex', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
             <Link href="#start" className="btn btn-primary" style={{ padding: '12px 20px', fontSize: 15 }}>🚀 Start learning</Link>
             <Link href="/topics/postgres/lab" className="btn" style={{ padding: '12px 20px', fontSize: 15 }}>🐘 Try real SQL in the browser</Link>
-            <Link href="/topics/messaging" className="btn" style={{ padding: '12px 20px', fontSize: 15 }}>📨 New: Redis · MQTT · Kafka</Link>
+            <Link href="/topics/cicd" className="btn" style={{ padding: '12px 20px', fontSize: 15 }}>🚀 New: n8n · CI/CD · Kafka</Link>
           </div>
         </div>
         <RandomQuestion />
@@ -172,6 +179,7 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span className="badge">{t.stats.sections} sections</span>
+                  {(t.lessonCount || 0) >= 3 && <span className="badge">📖 {t.lessonCount} lessons</span>}
                   {LABS[t.slug] && <span className="badge">🧪 {LABS[t.slug].length} lab{LABS[t.slug].length === 1 ? '' : 's'}</span>}
                   {t.hasQuiz && <span className="badge">✅ quiz</span>}
                   {!!t.visualCount && <span className="badge">🖼️ {t.visualCount} diagrams</span>}
@@ -194,7 +202,7 @@ export default function Home() {
 }
 
 function catTitle(c: string) {
-  return ({ 'AI Engineering': 'LLMs, RAG, agents and AI APIs', 'Web Development': 'Frontend and backend JavaScript', '.NET': 'C# and the .NET platform', Databases: 'SQL and NoSQL', Messaging: 'Queues, pub/sub and event streams', 'Coding Interviews': 'Practice problems in C# and JavaScript' } as Record<string, string>)[c] || 'Your notes';
+  return ({ 'AI Engineering': 'LLMs, RAG, agents and AI APIs', 'Web Development': 'Frontend and backend JavaScript', '.NET': 'C# and the .NET platform', Databases: 'SQL and NoSQL', Messaging: 'Queues, pub/sub and event streams', Automation: 'Automate work between your apps', DevOps: 'Build, test and ship automatically', 'Coding Interviews': 'Practice problems in C# and JavaScript' } as Record<string, string>)[c] || 'Your notes';
 }
 
 function SectionHead({ kicker, title, sub }: { kicker: string; title: string; sub?: string }) {

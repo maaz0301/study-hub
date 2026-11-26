@@ -14,6 +14,7 @@ export default async function TopicLayout({ children, params }: { children: Reac
   if (!t) notFound();
   const tabs = [
     { href: `/topics/${slug}`, label: 'Overview', icon: '📚', exact: true },
+    { href: `/topics/${slug}/tutorial`, label: 'Tutorial', icon: '📖', hide: (t.lessonCount || 0) < 3 },
     { href: `/topics/${slug}/visuals`, label: 'Visual guide', icon: '🖼️', hide: !t.visualCount },
     { href: `/topics/${slug}/quiz`, label: 'Quiz', icon: '✅', hide: t.stats.cards < 4 && !t.hasQuiz },
     { href: `/topics/${slug}/lab`, label: 'Playground', icon: '🧪', hide: !LABS[slug] },

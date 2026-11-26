@@ -1,0 +1,35 @@
+[
+ {
+  "q": "A Redis Pub/Sub subscriber is offline when a message is published. What happens?",
+  "options": [
+   "The message is queued until it returns",
+   "It misses the message forever",
+   "Redis retries every minute",
+   "The publisher gets an error"
+  ],
+  "answer": 1,
+  "explain": "Pub/Sub is fire-and-forget: nothing is stored, so offline subscribers miss it. Use Streams for durability."
+ },
+ {
+  "q": "Which Redis structure gives you consumer groups and acknowledgements?",
+  "options": [
+   "Pub/Sub channels",
+   "Strings",
+   "Streams",
+   "Sorted sets"
+  ],
+  "answer": 2,
+  "explain": "Streams (XREADGROUP, XACK, XPENDING) are a durable log with consumer groups."
+ },
+ {
+  "q": "In a Redis list queue, how do you avoid losing a job if the worker crashes after popping it?",
+  "options": [
+   "Use a bigger list",
+   "Atomically move it to a processing list (BLMOVE) and remove it only when done",
+   "Use PUBLISH",
+   "Turn off persistence"
+  ],
+  "answer": 1,
+  "explain": "BLMOVE keeps the job in a processing list until it is acknowledged, so a janitor can re-queue it."
+ }
+]

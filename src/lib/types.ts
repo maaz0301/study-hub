@@ -44,6 +44,7 @@ export type TopicSummary = TopicMeta & {
   partList: { id: string; title: string; count: number; blurb: string }[];
   hasQuiz: boolean;
   visualCount?: number;
+  lessonCount?: number;
 };
 
 export type VoiceStep = { ic: string; nm: string; title: string; tool: string; ms: string; inp: string; out: string; risk: string; say: string };

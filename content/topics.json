@@ -83,8 +83,27 @@
     "about": "More coding-interview practice, all in modern JavaScript: hash maps, sliding windows, stacks, binary search, trees, graphs, dynamic programming, backtracking and heaps. It ends with Node.js tasks interviewers love (debounce, Promise.all, EventEmitter, retry, promise pool, streams). Learn the pattern first, then write the code yourself."
   },
   "messaging.md": {
+    "order": 46,
+    "about": "The big picture of messaging: queues, pub/sub and logs, which of Redis, MQTT or Kafka to pick, the delivery guarantees (at-most, at-least, exactly once) and the patterns every interview asks about (outbox, idempotent consumers, dead-letter queues, ordering), plus a capstone pipeline from sensors to Kafka."
+  },
+  "redis.md": {
     "order": 42,
-    "about": "Message brokers let programs talk without being connected at the same time. Redis gives you fast pub/sub, job queues and streams; MQTT is the lightweight protocol for IoT devices; Kafka is a durable, replayable log for high-volume events. Start with the 27 step-by-step Node.js lessons (like the C# ones), then use the reference sections, diagrams and labs.",
-    "subtitle": "27 hands-on Node.js lessons plus reference: queues, pub/sub and event streams"
+    "about": "Redis is a very fast in-memory data store that also does messaging. Pub/Sub broadcasts live messages (nothing is kept), lists make a simple job queue, and Streams give you a durable log with consumer groups and acknowledgements. Follow the numbered tutorial in Node.js, run the commands in the browser console, then use the reference and quiz."
+  },
+  "mqtt.md": {
+    "order": 43,
+    "about": "MQTT is the lightweight publish/subscribe protocol for devices on weak networks. Clients publish to topics on a broker; wildcards (+ and #) let one subscriber listen to many devices. Learn QoS 0/1/2, retained messages, Last Will and persistent sessions in a step-by-step Node.js tutorial, with a wildcard tester and a QoS simulator."
+  },
+  "kafka.md": {
+    "order": 44,
+    "about": "Kafka is a durable, replayable log for events. Topics are split into partitions, messages with the same key stay in order, and consumer groups share the work. Follow the tutorial to create a topic, produce, consume, commit offsets, use acks and build a dead-letter topic, and play with partitions in the lab."
+  },
+  "n8n.md": {
+    "order": 50,
+    "about": "n8n is a workflow automation tool: connect nodes on a canvas so a trigger (webhook, schedule, app event) fetches data, transforms it and acts on it (Slack, email, CRM). Learn items, expressions, HTTP requests, branching, loops, error handling, AI agents and production set-up in 17 hands-on lessons, then practise the interview questions."
+  },
+  "cicd.md": {
+    "order": 51,
+    "about": "CI/CD means every code change is built, tested and released automatically. Learn GitHub Actions step by step (triggers, jobs, matrix, caching, artifacts, secrets, Docker, environments with approval), then release strategies (blue-green, canary, rollback), GitOps, security and the questions interviewers ask. Includes a pipeline simulator and a canary rollout lab."
   }
 }

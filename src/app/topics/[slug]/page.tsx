@@ -21,6 +21,16 @@ export default async function TopicOverview({ params }: { params: Promise<{ slug
   return (
     <div style={{ display: 'grid', gap: 24 }} className="grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
       <div>
+        {(t.lessonCount || 0) >= 3 && (
+          <Link href={`/topics/${slug}/tutorial/1`} className="tut-cta">
+            <span style={{ fontSize: 30 }}>📖</span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <b style={{ display: 'block', fontSize: 17 }}>Start the {t.lessonCount}-lesson tutorial</b>
+              <span style={{ fontSize: 13.5, opacity: .85 }}>One short lesson per page, with code you can run. Use Previous / Next to move on.</span>
+            </span>
+            <span className="tut-go">Start →</span>
+          </Link>
+        )}
         {t.about && (
           <div className="about-box" style={{ marginBottom: 18 }}>
             <b>In short: </b>{t.about}

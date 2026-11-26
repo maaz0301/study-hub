@@ -1,5 +1,6 @@
 import { leetcodeDiagrams, LEETCODE_RULES } from './diagrams-leetcode.mjs';
 import { extraDiagrams, EXTRA_RULES } from './diagrams-extra.mjs';
+import { devopsDiagrams, DEVOPS_RULES } from './diagrams-devops.mjs';
 
 // Animated, theme-aware SVG diagrams ("GIF-style" pictures) injected into sections at build time.
 // Generators: flow (pipeline), cycle (loop), hub (star), compare (side by side) + a few custom pictures.
@@ -381,6 +382,8 @@ Object.assign(D, leetcodeDiagrams({ flow, cycle }));
 RULES.leetcode = LEETCODE_RULES;
 Object.assign(D, extraDiagrams({ flow, cycle, hub, compare }));
 Object.assign(RULES, EXTRA_RULES);
+Object.assign(D, devopsDiagrams({ flow, cycle, hub, compare }));
+Object.assign(RULES, DEVOPS_RULES);
 
 export function renderDiagram(name) {
   const f = D[name];
