@@ -635,3 +635,7 @@ main { animation: pageIn .4s cubic-bezier(.2,.8,.2,1) both; }
 .road-card { display: flex; gap: 12px; padding: 14px; align-items: flex-start; flex: 1; min-width: 0; height: 100%; }
 .road-arrow { flex: 0 0 34px; text-align: center; color: var(--brand); font-size: 20px; font-weight: 800; }
 @media (max-width: 760px) { .road-arrow { display: none; } .road-item { flex-basis: 100%; } }
+.road-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+.road-tab { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-weight: 750; font-size: 14.5px; cursor: pointer; transition: transform .12s, background .15s, border-color .15s; }
+.road-tab:hover { transform: translateY(-1px); border-color: var(--brand); }
+.road-tab[data-on='true'] { color: white; border-color: transparent; background: linear-gradient(120deg, var(--brand), var(--brand-2)); box-shadow: 0 10px 22px -12px var(--brand); }

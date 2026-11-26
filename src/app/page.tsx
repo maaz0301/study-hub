@@ -3,6 +3,7 @@ import { categories, getIndex, getTopic } from '@/lib/content';
 import { LABS } from '@/lib/labs';
 import { RandomQuestion } from '@/components/RandomQuestion';
 import { CountUp, RotatingWord, Typer } from '@/components/HomeFx';
+import { Roadmap, type Track } from '@/components/Roadmap';
 
 const TRY_IT = [
   { slug: 'redis', href: '/topics/redis/lab', emoji: '🔴', title: 'Redis console', blurb: 'Type real Redis commands: lists, streams, consumer groups.', cmd: 'XADD orders * userId 7 total 59', color: '#f43f5e' },
@@ -16,45 +17,63 @@ const TRY_IT = [
 ];
 const FLOATERS = [['🧠', 56, 2, 0], ['📨', 93, 3, 1.2], ['🐘', 97, 50, 2.1], ['🍃', 57, 90, 0.6], ['⚛️', 86, 92, 1.8], ['🔷', 74, 1, 2.7], ['🤖', 47, 94, 3.2], ['🎙️', 98, 80, 0.3]] as const;
 
-const PATH = [
-  { stage: 'Language and coding', note: 'Start here: learn to write code and solve problems.', items: [
-    { slug: 'csharp', why: 'Learn the language: types, loops, classes, collections.' },
-    { slug: 'leetcode', why: 'Practice coding problems in C# and JavaScript.' },
-    { slug: 'leetcode-js', why: 'More coding problems, all in JavaScript.' },
-  ] },
-  { stage: 'Build web apps and APIs', note: 'Then turn code into real applications.', items: [
-    { slug: 'react-node', why: 'Full-stack JS: HTTP, React, Node, Express.' },
-    { slug: 'dotnet', why: 'Web APIs: DI, middleware, EF Core, async.' },
-    { slug: 'ai-fastapi-flask', why: 'Python APIs with FastAPI.' },
-  ] },
-  { stage: 'Store your data', note: 'Apps need a database.', items: [
-    { slug: 'postgres', why: 'Relational data: SQL, joins, indexes, transactions.' },
-    { slug: 'mongodb', why: 'Document data: CRUD, aggregation, schema design.' },
-    { slug: 'redis', why: 'Cache, queues and Streams.' },
-  ] },
-  { stage: 'Connect systems with messages', note: 'Services talk through events.', items: [
-    { slug: 'mqtt', why: 'The IoT messaging protocol: topics, QoS, sessions.' },
-    { slug: 'kafka', why: 'Event streaming: partitions and consumer groups.' },
-    { slug: 'messaging', why: 'Compare them and learn the patterns.' },
-  ] },
-  { stage: 'Ship and automate', note: 'Release safely and automate the boring parts.', items: [
-    { slug: 'cicd', why: 'Build, test and deploy with GitHub Actions and EC2.' },
-    { slug: 'n8n', why: 'Automate work between apps with workflows.' },
-  ] },
-  { stage: 'AI engineering', note: 'Finally, add intelligence.', items: [
-    { slug: 'genai-rag', why: 'LLMs, embeddings, RAG, agents, vector DBs.' },
-    { slug: 'agentic-langchain', why: 'Agents, tools, memory, LangChain and LangGraph.' },
-    { slug: 'voice-ai', why: 'Put it together: a real-time voice agent.' },
-  ] },
+const WHY: Record<string, string> = {
+  csharp: 'Learn the language: types, loops, classes, collections.',
+  leetcode: 'Practice coding problems in C# and JavaScript.',
+  'leetcode-js': 'Coding problems, all in JavaScript.',
+  'react-node': 'Full-stack JS: HTTP, React, Node, Express.',
+  dotnet: 'Web APIs: DI, middleware, EF Core, async.',
+  'ai-fastapi-flask': 'Python APIs with FastAPI, ready for AI work.',
+  postgres: 'Relational data: SQL, joins, indexes, transactions.',
+  mongodb: 'Document data: CRUD, aggregation, schema design.',
+  redis: 'Cache, queues and Streams.',
+  mqtt: 'The IoT messaging protocol: topics, QoS, sessions.',
+  kafka: 'Event streaming: partitions and consumer groups.',
+  messaging: 'Compare Redis, MQTT and Kafka and learn the patterns.',
+  cicd: 'Build, test and deploy with GitHub Actions and EC2.',
+  n8n: 'Automate work between apps with workflows.',
+  'genai-rag': 'LLMs, embeddings, RAG, agents, vector DBs.',
+  'agentic-langchain': 'Agents, tools, memory, LangChain and LangGraph.',
+  'voice-ai': 'Put it together: a real-time voice agent.',
+};
+
+type StageDef = { stage: string; note: string; slugs: string[] };
+const FULL_STACK: StageDef[] = [
+  { stage: 'Language and coding', note: 'Learn to write code and solve problems.', slugs: ['csharp', 'leetcode', 'leetcode-js'] },
+  { stage: 'Build web apps and APIs', note: 'Turn code into real applications.', slugs: ['react-node', 'dotnet'] },
+  { stage: 'Store your data', note: 'Apps need a database.', slugs: ['postgres', 'mongodb', 'redis'] },
+  { stage: 'Connect systems with messages', note: 'Services talk through events.', slugs: ['messaging', 'kafka', 'mqtt'] },
+  { stage: 'Ship and automate', note: 'Release safely, automate the boring parts.', slugs: ['cicd', 'n8n'] },
 ];
+const AI_ENGINEER: StageDef[] = [
+  { stage: 'Code and APIs', note: 'Python/JS you will use every day.', slugs: ['leetcode-js', 'ai-fastapi-flask'] },
+  { stage: 'Data for AI', note: 'Where facts and vectors live.', slugs: ['postgres', 'mongodb', 'redis'] },
+  { stage: 'LLMs and RAG', note: 'The core of the job.', slugs: ['genai-rag'] },
+  { stage: 'Agents', note: 'Let the model use tools.', slugs: ['agentic-langchain'] },
+  { stage: 'Voice and production', note: 'Real-time apps, deployed and automated.', slugs: ['voice-ai', 'cicd', 'n8n'] },
+];
+const COMBINED: StageDef[] = [
+  ...FULL_STACK,
+  { stage: 'AI engineering', note: 'Finally, add intelligence on top.', slugs: ['ai-fastapi-flask', 'genai-rag', 'agentic-langchain', 'voice-ai'] },
+];
+const TRACK_DEFS = [
+  { id: 'combined', label: 'Full Stack + AI', icon: '🚀', blurb: 'The whole journey: become a full-stack developer first, then add AI engineering.', stages: COMBINED },
+  { id: 'fullstack', label: 'Full Stack', icon: '🧱', blurb: 'Frontend, backend, databases, messaging and deployment.', stages: FULL_STACK },
+  { id: 'ai', label: 'AI Engineer', icon: '🤖', blurb: 'The shortest route to building LLM, RAG, agent and voice apps.', stages: AI_ENGINEER },
+];
+
 
 export default function Home() {
   const index = getIndex();
   const bySlug = Object.fromEntries(index.map((t) => [t.slug, t]));
   const totals = index.reduce((a, t) => ({ s: a.s + t.stats.sections, q: a.q + t.stats.questions, c: a.c + t.stats.cards }), { s: 0, q: 0, c: 0 });
   const labCount = Object.values(LABS).reduce((n, l) => n + l.length, 0);
-  let n = 0;
-  const stages = PATH.map((g) => ({ ...g, items: g.items.filter((p) => bySlug[p.slug]).map((p) => ({ ...p, n: ++n })) })).filter((g) => g.items.length);
+  const tracks: Track[] = TRACK_DEFS.map((t) => ({
+    ...t,
+    stages: t.stages
+      .map((g) => ({ stage: g.stage, note: g.note, items: g.slugs.filter((sl) => bySlug[sl]).map((sl) => ({ slug: sl, why: WHY[sl], title: bySlug[sl].title, emoji: bySlug[sl].emoji, accent: bySlug[sl].accent })) }))
+      .filter((g) => g.items.length),
+  }));
   const showcase = ['genai-rag:rag-pipeline', 'agentic-langchain:agent-loop', 'react-node:event-loop', 'dotnet:aspnet-pipeline']
     .map((k) => { const [slug, name] = k.split(':'); const v = getTopic(slug)?.extras.visuals?.find((x) => x.name === name); return v && { slug, v, t: bySlug[slug] }; })
     .filter(Boolean) as { slug: string; v: { name: string; svg: string }; t: (typeof index)[0] }[];
@@ -149,32 +168,8 @@ export default function Home() {
 
       {/* start here */}
       <section id="start" style={{ scrollMarginTop: 80, marginBottom: 48 }}>
-        <SectionHead kicker="Start here" title="A suggested learning path" sub="Follow the numbers 1, 2, 3… from the top. Each step builds on the one before. Later, jump anywhere with search (press /)." />
-        <ol className="road">
-          {stages.map((g, gi) => (
-            <li key={g.stage} className="road-stage">
-              <div className="road-dot">{gi + 1}</div>
-              <div className="road-head"><b>{g.stage}</b><span className="muted"> · {g.note}</span></div>
-              <div className="road-row">
-                {g.items.map((p, k) => {
-                  const t = bySlug[p.slug];
-                  return (
-                    <div key={p.slug} className="road-item">
-                      <Link href={`/topics/${t.slug}`} className="panel card-hover road-card" style={{ ['--accent' as string]: t.accent }}>
-                        <span className="part-num" style={{ background: `linear-gradient(135deg, ${t.accent}, color-mix(in oklab, ${t.accent} 50%, white))` }}>{p.n}</span>
-                        <span style={{ minWidth: 0 }}>
-                          <span style={{ display: 'block', fontWeight: 700 }}>{t.emoji} {t.title}</span>
-                          <span className="muted" style={{ display: 'block', fontSize: 13.5, marginTop: 3 }}>{p.why}</span>
-                        </span>
-                      </Link>
-                      {k < g.items.length - 1 && <span className="road-arrow" aria-hidden>➜</span>}
-                    </div>
-                  );
-                })}
-              </div>
-            </li>
-          ))}
-        </ol>
+        <SectionHead kicker="Start here" title="Pick your learning path" sub="Choose Full Stack, AI Engineer, or both combined. Follow the numbers 1, 2, 3… from the top: each step builds on the one before. Later, jump anywhere with search (press /)." />
+        <Roadmap tracks={tracks} />
         <div className="panel" style={{ marginTop: 14, padding: '14px 18px', display: 'flex', flexWrap: 'wrap', gap: '8px 22px', alignItems: 'center', fontSize: 14 }}>
           <b>Daily 30-minute routine:</b>
           <span>① read one part (10 min)</span>
